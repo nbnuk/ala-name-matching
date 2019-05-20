@@ -752,10 +752,14 @@ public class ALANameIndexer {
     }
 
     protected Document createCommonNameDocument(String cn, String sn, String lsid, String language, float boost){
-        return createCommonNameDocument(cn, sn, lsid, language, boost, true);
+        return createCommonNameDocument(cn, sn, lsid, language, boost, true, null);
     }
 
     protected Document createCommonNameDocument(String cn, String sn, String lsid, String language, float boost, boolean checkAccepted) {
+        return createCommonNameDocument(cn, sn, lsid, language, boost, checkAccepted, null);
+    }
+
+    protected Document createCommonNameDocument(String cn, String sn, String lsid, String language, float boost, boolean checkAccepted, String priority) {
         Document doc = new Document();
         //we are only interested in keeping all the alphanumerical values of the common name
         //when searching the same operations will need to be peformed on the search string
@@ -765,6 +769,14 @@ public class ALANameIndexer {
 
         if (sn != null) {
             doc.add(new TextField(IndexField.NAME.toString(), sn, Store.YES));
+        }
+
+        if (priority != null && priority != "") {
+            doc.add(new TextField(IndexField.PRIORITY.toString(), priority, Store.YES));
+            VernacularType type = VernacularType.forTerm(priority, VernacularType.COMMON);
+            Integer priority_val = type.getPriority();
+            doc.add(new NumericDocValuesField(IndexField.PRIORITY.toString() + "_val", priority_val));
+            doc.add(new StoredField(IndexField.PRIORITY.toString() + "_val", priority_val));
         }
 
         String newLsid = getAcceptedLSID(lsid);

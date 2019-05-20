@@ -1628,8 +1628,9 @@ public class ALANameSearcher {
     public String getCommonNameForLSID(String lsid) {
         if (lsid != null) {
             TermQuery query = new TermQuery(new Term(ALANameIndexer.IndexField.LSID.toString(), lsid));
+            Sort sortby = new Sort(new SortField("priority_val", SortField.Type.INT, true));
             try {
-                TopDocs results = vernSearcher.search(query, 1);
+                TopDocs results = vernSearcher.search(query, 1, sortby);
                 log.debug("Number of matches for " + lsid + " " + results.totalHits);
                 for (ScoreDoc sdoc : results.scoreDocs) {
                     org.apache.lucene.document.Document doc = vernSearcher.doc(sdoc.doc);
@@ -1657,7 +1658,8 @@ public class ALANameSearcher {
                             " AND " +
                             ALANameIndexer.IndexField.LANGUAGE.toString() + ":\"" + language + "\" "
                     );
-                    TopDocs results = vernSearcher.search(query, 1);
+                    Sort sortby = new Sort(new SortField("priority_val", SortField.Type.INT, true));
+                    TopDocs results = vernSearcher.search(query, 1, sortby);
                     log.debug("Number of matches for " + lsid + " " + results.totalHits);
                     for (ScoreDoc sdoc : results.scoreDocs) {
                         org.apache.lucene.document.Document doc = vernSearcher.doc(sdoc.doc);
@@ -1679,8 +1681,9 @@ public class ALANameSearcher {
     public Set<String> getCommonNamesForLSID(String lsid, int maxNumberOfNames) {
         if (lsid != null) {
             TermQuery query = new TermQuery(new Term(ALANameIndexer.IndexField.LSID.toString(), lsid));
+            Sort sortby = new Sort(new SortField("priority_val", SortField.Type.INT, true));
             try {
-                TopDocs results = vernSearcher.search(query, maxNumberOfNames);
+                TopDocs results = vernSearcher.search(query, maxNumberOfNames, sortby);
                 //if all the results have the same scientific name result the LSID for the first
                 log.debug("Number of matches for " + lsid + " " + results.totalHits);
                 Set<String> names = new HashSet<String>();
@@ -1716,8 +1719,9 @@ public class ALANameSearcher {
     private String getLSIDForUniqueCommonName(String name) {
         if (name != null) {
             TermQuery query = new TermQuery(new Term(ALANameIndexer.IndexField.SEARCHABLE_COMMON_NAME.toString(), name.toUpperCase().replaceAll("[^A-Z0-9ÏËÖÜÄÉÈČÁÀÆŒ]", "")));
+            Sort sortby = new Sort(new SortField("priority_val", SortField.Type.INT, true));
             try {
-                TopDocs results = vernSearcher.search(query, 10);
+                TopDocs results = vernSearcher.search(query, 10, sortby);
                 //if all the results have the same scientific name result the LSID for the first
                 String firstLsid = null;
                 String firstName = null;
@@ -2167,11 +2171,11 @@ public class ALANameSearcher {
 
     public static void main(String[] args) throws IOException {
 
-        ALANameSearcher nameindex = new ALANameSearcher(args[0]);
-        String name = nameindex.getCommonNameForLSID("urn:lsid:biodiversity.org.au:afd.taxon:31a9b8b8-4e8f-4343-a15f-2ed24e0bf1ae");
+        ALANameSearcher nameindex = new ALANameSearcher("/data/lucene/namematching" /*args[0]*/);
+        String name = nameindex.getCommonNameForLSID("NHMSYS0001489126");
         System.out.println(name);
 
-        Set<String> names = nameindex.getCommonNamesForLSID("urn:lsid:biodiversity.org.au:apni.taxon:295861", 100);
+        Set<String> names = nameindex.getCommonNamesForLSID("NHMSYS0001489126", 100);
         for(String commonName: names){
             System.out.println(commonName);
         }
