@@ -311,7 +311,9 @@ public class DwcaNameIndexer extends ALANameIndexer {
             lsid = result.getAcceptedLsid() != null ? result.getAcceptedLsid() : result.getLsid();
             if (scientificName == null)
                 scientificName = result.getRankClassification().getScientificName();
-            Document doc = this.createCommonNameDocument(vernacularName, scientificName, lsid, language,1.0f, false);
+            //TODO: check this properly
+            //String priority = record.value(ALATerm.status);
+            Document doc = this.createCommonNameDocument(vernacularName, scientificName, lsid, language,1.0f, false /*, priority */);
             this.vernacularIndexWriter.addDocument(doc);
         }
         return true;
@@ -378,6 +380,7 @@ public class DwcaNameIndexer extends ALANameIndexer {
             String taxonID = record.id();
             String vernacularName = record.value(DwcTerm.vernacularName);
             String language = record.value(DcTerm.language);
+            String priority = record.value(ALATerm.status);
             TopDocs result = getLoadIdxResults(null, "lsid", taxonID, 1);
             if(result.totalHits > 0){
                 Document sciNameDoc = lsearcher.doc(result.scoreDocs[0].doc);
@@ -389,7 +392,8 @@ public class DwcaNameIndexer extends ALANameIndexer {
                         taxonID,
                         language,
                         1.0f,
-                        false);
+                        false,
+                        priority);
                 this.vernacularIndexWriter.addDocument(doc);
                 count++;
             }
