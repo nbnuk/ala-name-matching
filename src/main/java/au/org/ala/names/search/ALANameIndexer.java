@@ -113,6 +113,7 @@ public class ALANameIndexer {
     private final int POS_S = 29;
     private final int POS_SRC = 30;
     private final int POS_EXCLUDED = 36;
+    private final int POS_NOMENCLATURAL_STATUS = 13;
 
     private String indexDirectory;
     private IndexWriter cbIndexWriter;
@@ -133,7 +134,8 @@ public class ALANameIndexer {
         PRIORITY("priority"),
         SEARCHABLE_COMMON_NAME("common"),
         COMMON_NAME("common_orig"),
-        LANGUAGE("lang");
+        LANGUAGE("lang"),
+        NOMENCLATURAL_STATUS("nomenclatural_status");
 
         String name;
 
@@ -296,7 +298,7 @@ public class ALANameIndexer {
                 String lsid = values[0];
                 String scientificName = values[1];
                 String authority = values[2];
-                Document doc = createALAIndexDocument(scientificName, "-1", lsid, authority, null);
+                Document doc = createALAIndexDocument(scientificName, "-1", lsid, authority, null, null);
                 iw.addDocument(doc);
             }
         }
@@ -309,7 +311,8 @@ public class ALANameIndexer {
             String source = values[11];
             //give CoL synonyms a lower boost than NSL
             int priority = source.trim().equals("") || source.equalsIgnoreCase("CoL") ? MatchMetrics.DEFAULT_PRIORITY * 3 / 4 : MatchMetrics.DEFAULT_PRIORITY;
-            Document doc = createALASynonymDocument(values[5], values[6], null, null, values[0], values[1], values[2], values[3], values[4], priority, values[9]);
+            String nomenclaturalStatus = values[POS_NOMENCLATURAL_STATUS]; // NBN we don't use a distinct synonyms file *** ??
+            Document doc = createALASynonymDocument(values[5], values[6], null, null, values[0], values[1], values[2], values[3], values[4], priority, values[9], nomenclaturalStatus);
             if (doc != null)
                 iw.addDocument(doc);
         }
@@ -342,6 +345,8 @@ public class ALANameIndexer {
             }
             int priority = Math.round(boost * MatchMetrics.DEFAULT_PRIORITY);
 
+            String nomenclaturalStatus = values[POS_NOMENCLATURAL_STATUS];
+
 
             Document doc = createALAIndexDocument(values[POS_SCI_NAME], id, lsid, values[POS_RANK_ID],
                     values[POS_RANK], values[POS_K], values[POS_KID], values[POS_P],
@@ -349,7 +354,7 @@ public class ALANameIndexer {
                     values[POS_O], values[POS_OID], values[POS_F], values[POS_FID],
                     values[POS_G], values[POS_GID], values[POS_S], values[POS_SID],
                     values[POS_LFT], values[POS_RGT], acceptedValues,
-                    values[POS_SP_EPITHET], values[POS_INFRA_EPITHET], values[POS_AUTHOR], null, null, priority);
+                    values[POS_SP_EPITHET], values[POS_INFRA_EPITHET], values[POS_AUTHOR], null, null, priority, nomenclaturalStatus);
 
 
             //add the excluded information if applicable
@@ -373,11 +378,11 @@ public class ALANameIndexer {
         log.info("Lucene index created - processed a total of " + records + " records in " + (System.currentTimeMillis() - time) + " msecs ");
     }
 
-    public void addAdditionalName(String lsid, String scientificName, String author, LinnaeanRankClassification cl) throws Exception {
+    public void addAdditionalName(String lsid, String scientificName, String author, LinnaeanRankClassification cl, String nomenclaturalStatus) throws Exception {
 
         if (cbIndexWriter == null)
             cbIndexWriter = createIndexWriter(new File(indexDirectory + File.separator + "cb"), new LowerCaseKeywordAnalyzer(), false);
-        Document doc = createALAIndexDocument(scientificName, "-1", lsid, author, cl);
+        Document doc = createALAIndexDocument(scientificName, "-1", lsid, author, cl, nomenclaturalStatus);
         cbIndexWriter.addDocument(doc);
 
     }
@@ -790,23 +795,23 @@ public class ALANameIndexer {
         return doc;
     }
 
-    public Document createALAIndexDocument(String name, String id, String lsid, String author, LinnaeanRankClassification cl){
-        return createALAIndexDocument(name,id, lsid, author,null,null, null, null, cl, null, null, MatchMetrics.DEFAULT_PRIORITY);
+    public Document createALAIndexDocument(String name, String id, String lsid, String author, LinnaeanRankClassification cl, String nomenclaturalStatus){
+        return createALAIndexDocument(name,id, lsid, author,null,null, null, null, cl, null, null, MatchMetrics.DEFAULT_PRIORITY, nomenclaturalStatus);
     }
 
-    public Document createALAIndexDocument(String name, String id, String lsid, String author, String rank, String rankId, String left, String right, LinnaeanRankClassification cl, String nameComplete, Collection<String> otherNames, int priority){
+    public Document createALAIndexDocument(String name, String id, String lsid, String author, String rank, String rankId, String left, String right, LinnaeanRankClassification cl, String nameComplete, Collection<String> otherNames, int priority, String nomenclaturalStatus){
         if(cl == null)
             cl = new LinnaeanRankClassification();
         return createALAIndexDocument(name, id, lsid, rankId, rank, cl.getKingdom(), cl.getKid(), cl.getPhylum()
                 , cl.getPid(), cl.getKlass(), cl.getCid(), cl.getOrder(), cl.getOid(), cl.getFamily(),
-                cl.getFid(), cl.getGenus(), cl.getGid(), cl.getSpecies(), cl.getSid(), left, right, null, null, null, author, nameComplete, otherNames, priority);
+                cl.getFid(), cl.getGenus(), cl.getGid(), cl.getSpecies(), cl.getSid(), left, right, null, null, null, author, nameComplete, otherNames, priority, nomenclaturalStatus);
     }
 
-    protected Document createALASynonymDocument(String scientificName, String author, String nameComplete, Collection<String> otherNames, String id, String lsid, String nameLsid, String acceptedLsid, String acceptedId, int priority, String synonymType) {
+    protected Document createALASynonymDocument(String scientificName, String author, String nameComplete, Collection<String> otherNames, String id, String lsid, String nameLsid, String acceptedLsid, String acceptedId, int priority, String synonymType, String nomenclaturalStatus) {
         lsid = StringUtils.isBlank(lsid) ? nameLsid : lsid;
         Document doc = createALAIndexDocument(scientificName, id, lsid, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                acceptedLsid, null, null, author, nameComplete, otherNames, priority);
+                acceptedLsid, null, null, author, nameComplete, otherNames, priority, nomenclaturalStatus);
         if (doc != null && synonymType != null) {
             try {
                 doc.add(new TextField(NameIndexField.SYNONYM_TYPE.toString(), synonymType, Store.YES));
@@ -826,14 +831,14 @@ public class ALANameIndexer {
                                             String oid, String family, String fid, String genus, String gid,
                                             String species, String sid, String left, String right, String acceptedConcept, String specificEpithet,
                                             String infraspecificEpithet, String author, String nameComplete, Collection<String> otherNames,
-                                            int priority) {
+                                            int priority, String nomenclaturalStatus) {
         //
         if (isBlacklisted(name)) {
             System.out.println(name + " has been blacklisted");
             return null;
         }
 
-        nameComplete = buildNameComplete(name, author, nameComplete);
+        nameComplete = buildNameComplete(name, author, nameComplete, nomenclaturalStatus);
         CleanedScientificName cname = new CleanedScientificName(name);
         CleanedScientificName cnameComplete = new CleanedScientificName(nameComplete);
         Document doc = new Document();
@@ -846,7 +851,6 @@ public class ALANameIndexer {
         if (lsid.startsWith("ALA")) {
             doc.add(new TextField(NameIndexField.ALA.toString(), "T", Store.NO));
         }
-
 
         HashSet<String> nameSet = otherNames != null ? new HashSet<String>(otherNames) : new HashSet<>();
         nameSet.add(cname.getName());
@@ -937,6 +941,9 @@ public class ALANameIndexer {
             doc.add(new TextField(NameIndexField.AUTHOR.toString(), author, Store.YES));
         }
 
+        if (StringUtils.trimToNull(nomenclaturalStatus) != null) {
+            doc.add(new StringField(NameIndexField.NOMENCLATURAL_STATUS.toString(), nomenclaturalStatus, Store.YES));
+        }
 
         //Generate the canonical
         //add the canonical form of the name
@@ -1031,7 +1038,7 @@ public class ALANameIndexer {
         this.indexDirectory = indexDirectory;
     }
 
-    protected String buildNameComplete(String name, String author, String nameComplete) {
+    protected String buildNameComplete(String name, String author, String nameComplete, String nomenclaturalStatus) {
         if (StringUtils.isNotBlank(nameComplete))
             return nameComplete;
         StringBuilder ncb = new StringBuilder(64);
@@ -1040,6 +1047,9 @@ public class ALANameIndexer {
         ncb.append(" ");
         if (author != null)
             ncb.append(author);
+        ncb.append(" ");
+        if (nomenclaturalStatus != null)
+            ncb.append(nomenclaturalStatus);
         return ncb.toString().trim();
     }
 

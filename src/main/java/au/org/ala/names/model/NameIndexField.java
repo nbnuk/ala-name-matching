@@ -47,7 +47,8 @@ public enum NameIndexField {
     DATASET_ID("dataset_id"), // The source dataset
     SYNONYM_TYPE("syn_type"), //stores the type of synonym that it represents
     /* Stores the priority score associated with a taxon */
-    PRIORITY("priority");
+    PRIORITY("priority"),
+    NOMENCLATURAL_STATUS("nomenclatural_status"); //NBN: name attribute like 'sensu lato'
     String name;
 
     NameIndexField(String name) {

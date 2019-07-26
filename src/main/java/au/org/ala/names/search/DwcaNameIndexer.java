@@ -454,7 +454,8 @@ public class DwcaNameIndexer extends ALANameIndexer {
             String infraspecificEpithet = core.value(DwcTerm.infraspecificEpithet);
             String taxonRank = core.value(DwcTerm.taxonRank);
             String datasetID = core.value(DwcTerm.datasetID);
-            nameComplete = this.buildNameComplete(scientificName, scientificNameAuthorship, nameComplete);
+            String nomenclaturalStatus = core.value(DwcTerm.nomenclaturalStatus); // *** RR ??
+            nameComplete = this.buildNameComplete(scientificName, scientificNameAuthorship, nameComplete, nomenclaturalStatus);
             //add and store the identifier for the record
             doc.add(new StringField(NameIndexField.ID.toString(), id, Field.Store.YES));
             if(StringUtils.isNotBlank(taxonID)){
@@ -478,6 +479,9 @@ public class DwcaNameIndexer extends ALANameIndexer {
             }
             if (StringUtils.isNotBlank(nameComplete)) {
                 doc.add(new StoredField(NameIndexField.NAME_COMPLETE.toString(), nameComplete));
+            }
+            if (StringUtils.isNotBlank(nomenclaturalStatus)) {
+                doc.add(new StoredField(NameIndexField.NOMENCLATURAL_STATUS.toString(), nomenclaturalStatus));
             }
             if(StringUtils.isNotBlank(genus)) {
                 //stored no need to search on
@@ -532,7 +536,8 @@ public class DwcaNameIndexer extends ALANameIndexer {
                     String sn = variant.value(DwcTerm.scientificName);
                     String sna = variant.value(DwcTerm.scientificNameAuthorship);
                     String nc  = variant.value(ALATerm.nameComplete);
-                    nc = this.buildNameComplete(sn, sna, nc);
+                    String nomenclaturalStatus2 = variant.value(DwcTerm.nomenclaturalStatus); // *** RR ??
+                    nc = this.buildNameComplete(sn, sna, nc, nomenclaturalStatus2);
                     otherNames.add(sn);
                     otherNames.add(nc);
                 }
@@ -541,7 +546,7 @@ public class DwcaNameIndexer extends ALANameIndexer {
             for (String name: otherNames)
                 doc.add(new StoredField(NameIndexField.OTHER_NAMES.toString(), name));
 
-
+            //System.out.println(doc.toString());
             this.loadingIndexWriter.addDocument(doc);
             i++;
             if(i % 1000 == 0){
@@ -725,6 +730,8 @@ public class DwcaNameIndexer extends ALANameIndexer {
         // Get other names
         Set<String> otherNames = Sets.newHashSet(doc.getValues(NameIndexField.OTHER_NAMES.toString()));
 
+        String nomenclaturalStatus = doc.get(NameIndexField.NOMENCLATURAL_STATUS.toString()); // *** RR ??
+        //do we actually want to put the nomenclaturalStatus in its own field, or simply use it to build the nameComplete?
         //now insert this term
         Document indexDoc = this.createALAIndexDocument(
                 name,
@@ -738,14 +745,15 @@ public class DwcaNameIndexer extends ALANameIndexer {
                 newcl,
                 nameComplete,
                 otherNames,
-                score);
+                score,
+                nomenclaturalStatus);
         writer.addDocument(indexDoc);
         return right + 1;
     }
 
     // Extended to allow use of the accepted information when filling out higher taxonomy
     @Override
-    protected Document createALASynonymDocument(String scientificName, String author, String nameComplete, Collection<String> otherNames, String id, String lsid, String nameLsid, String acceptedLsid, String acceptedId, int priority, String synonymType) {
+    protected Document createALASynonymDocument(String scientificName, String author, String nameComplete, Collection<String> otherNames, String id, String lsid, String nameLsid, String acceptedLsid, String acceptedId, int priority, String synonymType, String nomenclaturalStatus) {
         lsid = StringUtils.isBlank(lsid) ? nameLsid : lsid;
         Document accepted = null;
         String kingdom = null;
@@ -756,6 +764,7 @@ public class DwcaNameIndexer extends ALANameIndexer {
         String genus = null;
         String specificEpithet = null;
         String infraspecificEpithet = null;
+        //String nomenclaturalStatus = null; // RR **** ??
         try {
             TopDocs hits = this.cbSearcher.search(new TermQuery(new Term(NameIndexField.LSID.toString(), acceptedLsid)), 1);
             if (hits.totalHits > 0)
@@ -791,7 +800,7 @@ public class DwcaNameIndexer extends ALANameIndexer {
         }
         Document doc = createALAIndexDocument(scientificName, id, lsid, null, null,
                 kingdom, null, phylum, null, clazz, null, order, null, family, null, genus, null, null, null, null, null,
-                acceptedLsid, specificEpithet, infraspecificEpithet, author, nameComplete, otherNames, priority);
+                acceptedLsid, specificEpithet, infraspecificEpithet, author, nameComplete, otherNames, priority, nomenclaturalStatus);
         if (doc != null && synonymType != null) {
             try {
                 doc.add(new TextField(NameIndexField.SYNONYM_TYPE.toString(), synonymType, Field.Store.YES));
@@ -841,7 +850,8 @@ public class DwcaNameIndexer extends ALANameIndexer {
             String nameComplete = core.value(ALATerm.nameComplete);
             String scientificName = core.value(DwcTerm.scientificName);
             String scientificNameAuthorship = core.value(DwcTerm.scientificNameAuthorship);
-            nameComplete = this.buildNameComplete(scientificName, scientificNameAuthorship, nameComplete);
+            String nomenclaturalStatus = core.value(DwcTerm.nomenclaturalStatus);
+            nameComplete = this.buildNameComplete(scientificName, scientificNameAuthorship, nameComplete, nomenclaturalStatus);
             String datasetID = core.value(DwcTerm.datasetID);
             String taxonomicStatus = core.value(DwcTerm.taxonomicStatus);
             if(StringUtils.isNotEmpty(acceptedNameUsageID) && (!StringUtils.equals(acceptedNameUsageID , id) && !StringUtils.equals(acceptedNameUsageID, lsid))){
@@ -859,7 +869,8 @@ public class DwcaNameIndexer extends ALANameIndexer {
                         String sn = variant.value(DwcTerm.scientificName);
                         String sna = variant.value(DwcTerm.scientificNameAuthorship);
                         String nc  = variant.value(ALATerm.nameComplete);
-                        nc = this.buildNameComplete(sn, sna, nc);
+                        String nomenclaturalStatus2 = variant.value(DwcTerm.nomenclaturalStatus);
+                        nc = this.buildNameComplete(sn, sna, nc, nomenclaturalStatus2);
                         otherNames.add(sn);
                         otherNames.add(nc);
                     }
@@ -880,7 +891,9 @@ public class DwcaNameIndexer extends ALANameIndexer {
                             acceptedNameUsageID,
                             acceptedNameUsageID,
                             score < 0 ? defaultScore : score,
-                            taxonomicStatus);
+                            taxonomicStatus,
+                            nomenclaturalStatus);
+
 
                     if(doc != null){
                         writer.addDocument(doc);

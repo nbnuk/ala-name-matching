@@ -2172,13 +2172,35 @@ public class ALANameSearcher {
     public static void main(String[] args) throws IOException {
 
         ALANameSearcher nameindex = new ALANameSearcher("/data/lucene/namematching" /*args[0]*/);
-        String name = nameindex.getCommonNameForLSID("NHMSYS0001489126");
+        //String x = nameindex.getCommonNameForLSID("NBNSYS0000000027");
+        //System.out.println(x);
+        /* String name = nameindex.getCommonNameForLSID("NHMSYS0001489126");
         System.out.println(name);
 
         Set<String> names = nameindex.getCommonNamesForLSID("NHMSYS0001489126", 100);
         for(String commonName: names){
             System.out.println(commonName);
         }
+        */
+        //NameSearchResult resultx = nameindex.searchForRecordByLsid("NHMSYS0020001356");
+        //System.out.println(resultx);
+
+        LinnaeanRankClassification cl = new LinnaeanRankClassification();
+        cl.setScientificName("Pipistrellus pipistrellus (Schreber, 1774) sensu stricto"); // (Schreber, 1774) sensu lato");
+        //cl.setScientificName("Asplenium adiantum-nigrum L. sens.lat.");
+        //cl.setScientificName("Vanellus vanellus (Linnaeus, 1758)");
+
+        //String lsid = nameindex.searchForAcceptedLsidDefaultHandling(cl,true);
+        NameSearchResult result = nameindex.searchForAcceptedRecordDefaultHandling(cl, true);
+        //System.out.println(lsid);
+        System.out.println(result);
+
+        //cl.setScientificName("Pipistrellus pipistrellus (Schreber, 1774) sensu stricto"); //(Schreber, 1774) sensu stricto
+        //String lsid2 = nameindex.searchForAcceptedLsidDefaultHandling(cl,true);
+        //NameSearchResult result2 = nameindex.searchForAcceptedRecordDefaultHandling(cl, true);
+        //System.out.println(lsid2);
+        //System.out.println(result2);
+
     }
 
 }

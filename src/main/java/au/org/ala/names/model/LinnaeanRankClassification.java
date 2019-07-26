@@ -30,8 +30,27 @@ public class LinnaeanRankClassification {
     protected String scientificName;
     protected String authorship;
     protected String rank;
+    protected String nomenclaturalStatus;
 
     public LinnaeanRankClassification() {
+    }
+
+    public LinnaeanRankClassification(String kingdom, String phylum,
+                                      String klass, String order, String family, String genus,
+                                      String species, String specificEpithet, String subspecies, String infraspecificEpithet,
+                                      String scientificName, String nomenclaturalStatus) {
+        this.kingdom = kingdom;
+        this.phylum = phylum;
+        this.klass = klass;
+        this.order = order;
+        this.family = family;
+        this.genus = genus;
+        this.species = species;
+        this.specificEpithet = specificEpithet;
+        this.subspecies = subspecies;
+        this.infraspecificEpithet = infraspecificEpithet;
+        this.scientificName = scientificName;
+        this.nomenclaturalStatus = nomenclaturalStatus;
     }
 
     public LinnaeanRankClassification(String kingdom, String phylum,
@@ -49,6 +68,7 @@ public class LinnaeanRankClassification {
         this.subspecies = subspecies;
         this.infraspecificEpithet = infraspecificEpithet;
         this.scientificName = scientificName;
+        this.nomenclaturalStatus = null;
     }
     public LinnaeanRankClassification(LinnaeanRankClassification cl){
         this.kingdom = cl.kingdom;
@@ -71,6 +91,7 @@ public class LinnaeanRankClassification {
         this.authorship = cl.authorship;
         this.scientificName = cl.scientificName;
         this.rank = cl.rank;
+        this.nomenclaturalStatus = cl.nomenclaturalStatus;
     }
 
     /**
@@ -274,6 +295,20 @@ public class LinnaeanRankClassification {
     }
 
     /**
+     * @return the nomenclaturalstatus
+     */
+    public String getNomenclaturalStatus() {
+        return nomenclaturalStatus;
+    }
+
+    /**
+     * @param nomenclaturalStatus the nomenclaturalStatus to set
+     */
+    public void setNomenclaturalStatus(String nomenclaturalStatus) {
+        this.nomenclaturalStatus = nomenclaturalStatus;
+    }
+
+    /**
      * @return the identification for the kingdom, either a CB ID or GUID
      */
     public String getKid() {
@@ -373,6 +408,7 @@ public class LinnaeanRankClassification {
                 .append("subspecies", this.subspecies)
                 .append("infraspecificEpithet", this.infraspecificEpithet)
                 .append("scientificName", this.scientificName)
+                .append("nomenclaturalStatus", this.nomenclaturalStatus)
                 .toString();
     }
 
@@ -400,7 +436,7 @@ public class LinnaeanRankClassification {
                 this.family, rhs.family).append(this.order, rhs.order).append(
                 this.klass, rhs.klass).append(this.genus, rhs.genus).append(this.species, rhs.species)
                 .append(this.specificEpithet, rhs.specificEpithet).append(this.subspecies, rhs.subspecies)
-                .append(this.infraspecificEpithet, rhs.infraspecificEpithet).isEquals();
+                .append(this.infraspecificEpithet, rhs.infraspecificEpithet).append(this.nomenclaturalStatus, rhs.nomenclaturalStatus).isEquals();
     }
 
     /**
@@ -485,6 +521,8 @@ public class LinnaeanRankClassification {
         //authorship is always optional due to inconsistencies in the name format etc...
         if (StringUtils.isNotEmpty(authorship))
             sb.append(" ").append(NameIndexField.AUTHOR.toString()).append(":\"").append(authorship).append("\"~");
+        if (StringUtils.isNotEmpty(nomenclaturalStatus))
+            sb.append(" ").append(NameIndexField.NOMENCLATURAL_STATUS.toString()).append(":\"").append(nomenclaturalStatus).append("\"~");
         return sb.toString();
     }
 
@@ -503,7 +541,7 @@ public class LinnaeanRankClassification {
         return new HashCodeBuilder(1497136033, 448920019).append(this.scientificName).append(
                 this.phylum).append(this.kingdom).append(this.family).append(
                 this.order).append(this.klass).append(this.genus).append(this.species).
-                append(this.specificEpithet).append(this.subspecies).append(this.infraspecificEpithet).toHashCode();
+                append(this.specificEpithet).append(this.subspecies).append(this.infraspecificEpithet).append(this.nomenclaturalStatus).toHashCode();
     }
 
 
