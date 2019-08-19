@@ -898,6 +898,16 @@ public class ALANameSearcher {
             if (results.size() > 0) {
                 results.get(0).setMatchType(MatchType.TAXON_ID);
                 return results.get(0);
+            } else {
+                //maybe it was a vernacular name ID?
+                String lsid = getLSIDForCommonNameID(id);
+                if (lsid != null) {
+                    List<NameSearchResult> results2 = performSearch(ALANameIndexer.IndexField.ID.toString(), lsid, null, null, 1, null, false, idParser.get());
+                    if (results2.size() > 0) {
+                        results2.get(0).setMatchType(MatchType.TAXON_ID);
+                        return results2.get(0);
+                    }
+                }
             }
         } catch (SearchResultException e) {
             //this should not happen as we are  not checking for homonyms
@@ -1709,6 +1719,32 @@ public class ALANameSearcher {
     }
 
     /**
+     * Retrieve a single LSID for this ID.
+     * @param id
+     * @return
+     */
+    public String getLSIDForCommonNameID(String id) {
+        if (id != null) {
+            TermQuery query = new TermQuery(new Term(ALANameIndexer.IndexField.ID.toString(), id));
+            try {
+                TopDocs results = vernSearcher.search(query, 1);
+                //if all the results have the same scientific name result the LSID for the first
+                log.debug("Number of matches for " + id + " " + results.totalHits);
+                String lsid = null;
+
+                for (ScoreDoc sdoc : results.scoreDocs) {
+                    org.apache.lucene.document.Document doc = vernSearcher.doc(sdoc.doc);
+                    lsid = doc.get(ALANameIndexer.IndexField.LSID.toString());
+                }
+                return lsid;
+            } catch (IOException e) {
+                log.debug("Unable to access document for common name.", e);
+            }
+        }
+        return null;
+    }
+
+    /**
      * Returns the LSID for the CB name usage for the supplied common name.
      * <p/>
      * When the common name returns more than 1 hit a result is only returned if all the scientific names match
@@ -1814,6 +1850,16 @@ public class ALANameSearcher {
             TopDocs hits = this.idSearcher.search(query, 1);
             if (hits.totalHits == 0)
                 hits = this.cbSearcher.search(query, 1);
+            if (hits.totalHits == 0) {
+                //try common-name taxon ID match
+                String taxonLsid = getLSIDForCommonNameID(lsid);
+                if (taxonLsid != null) {
+                    Query queryTaxon = new TermQuery(new Term(NameIndexField.LSID.toString(), taxonLsid));
+                    hits = this.idSearcher.search(queryTaxon, 1);
+                    if (hits.totalHits == 0)
+                        hits = this.cbSearcher.search(queryTaxon, 1);
+                }
+            }
             if (hits.totalHits > 0)
                 return new NameSearchResult(cbSearcher.doc(hits.scoreDocs[0].doc), MatchType.TAXON_ID);
         } catch (Exception ex) {
@@ -2172,7 +2218,7 @@ public class ALANameSearcher {
     public static void main(String[] args) throws IOException {
 
         ALANameSearcher nameindex = new ALANameSearcher("/data/lucene/namematching" /*args[0]*/);
-        //String x = nameindex.getCommonNameForLSID("NBNSYS0000000027");
+        //String x = nameindex.getCommonNameForLSID("BMSSYS0000042093");
         //System.out.println(x);
         /* String name = nameindex.getCommonNameForLSID("NHMSYS0001489126");
         System.out.println(name);
@@ -2182,18 +2228,29 @@ public class ALANameSearcher {
             System.out.println(commonName);
         }
         */
-        //NameSearchResult resultx = nameindex.searchForRecordByLsid("NHMSYS0020001356");
-        //System.out.println(resultx);
 
-        LinnaeanRankClassification cl = new LinnaeanRankClassification();
-        cl.setScientificName("Pipistrellus pipistrellus (Schreber, 1774) sensu stricto"); // (Schreber, 1774) sensu lato");
+        NameSearchResult resultx = nameindex.searchForRecordByID("NBNSYS0000167460"); //NBNSYS0000000027");
+        NameSearchResult resultxx = nameindex.searchForRecordByLsid("NBNSYS0000167460"); //NBNSYS0000000027");
+        //String x = nameindex.getLSIDForCommonNameID("nbnsys0000167460");
+        System.out.println(resultx);
+        System.out.println(resultxx);
+        //System.out.println(x);
+
+
+
+        //LinnaeanRankClassification cl = new LinnaeanRankClassification();
+        //cl.setScientificName("Pipistrellus pipistrellus (Schreber, 1774) sensu stricto"); // (Schreber, 1774) sensu lato");
         //cl.setScientificName("Asplenium adiantum-nigrum L. sens.lat.");
         //cl.setScientificName("Vanellus vanellus (Linnaeus, 1758)");
+        //cl.setScientificName("Tricholoma aestuans (Fr.) Gillet");
 
         //String lsid = nameindex.searchForAcceptedLsidDefaultHandling(cl,true);
-        NameSearchResult result = nameindex.searchForAcceptedRecordDefaultHandling(cl, true);
-        //System.out.println(lsid);
-        System.out.println(result);
+        //NameSearchResult result = nameindex.searchForAcceptedRecordDefaultHandling(cl, true);
+        //String result2 = nameindex.getCommonNameForLSID("BMSSYS0000042093");
+        //String result2 = nameindex.getCommonNameForLSID("NBNSYS0000039417");
+        //String result3 = nameindex.getLSIDForUniqueCommonName("Acrid Knight");
+        //System.out.println(result3);
+        //System.out.println(result);
 
         //cl.setScientificName("Pipistrellus pipistrellus (Schreber, 1774) sensu stricto"); //(Schreber, 1774) sensu stricto
         //String lsid2 = nameindex.searchForAcceptedLsidDefaultHandling(cl,true);

@@ -48,7 +48,8 @@ public enum NameIndexField {
     SYNONYM_TYPE("syn_type"), //stores the type of synonym that it represents
     /* Stores the priority score associated with a taxon */
     PRIORITY("priority"),
-    NOMENCLATURAL_STATUS("nomenclatural_status"); //NBN: name attribute like 'sensu lato'
+    NOMENCLATURAL_STATUS("nomenclatural_status"), //NBN: name attribute like 'sensu lato'
+    ESTABLISHMENT_MEANS("establishment_means"); //NBN: native / non-native
     String name;
 
     NameIndexField(String name) {

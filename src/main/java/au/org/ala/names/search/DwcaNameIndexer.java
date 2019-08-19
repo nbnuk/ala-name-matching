@@ -381,6 +381,7 @@ public class DwcaNameIndexer extends ALANameIndexer {
             String vernacularName = record.value(DwcTerm.vernacularName);
             String language = record.value(DcTerm.language);
             String priority = record.value(ALATerm.status);
+            String commonNameID = record.value(DwcTerm.scientificNameID);
             TopDocs result = getLoadIdxResults(null, "lsid", taxonID, 1);
             if(result.totalHits > 0){
                 Document sciNameDoc = lsearcher.doc(result.scoreDocs[0].doc);
@@ -393,7 +394,8 @@ public class DwcaNameIndexer extends ALANameIndexer {
                         language,
                         1.0f,
                         false,
-                        priority);
+                        priority,
+                        commonNameID);
                 this.vernacularIndexWriter.addDocument(doc);
                 count++;
             }
@@ -454,7 +456,8 @@ public class DwcaNameIndexer extends ALANameIndexer {
             String infraspecificEpithet = core.value(DwcTerm.infraspecificEpithet);
             String taxonRank = core.value(DwcTerm.taxonRank);
             String datasetID = core.value(DwcTerm.datasetID);
-            String nomenclaturalStatus = core.value(DwcTerm.nomenclaturalStatus); // *** RR ??
+            String nomenclaturalStatus = core.value(DwcTerm.nomenclaturalStatus);
+            String establishmentMeans = core.value(DwcTerm.establishmentMeans);
             nameComplete = this.buildNameComplete(scientificName, scientificNameAuthorship, nameComplete, nomenclaturalStatus);
             //add and store the identifier for the record
             doc.add(new StringField(NameIndexField.ID.toString(), id, Field.Store.YES));
@@ -482,6 +485,9 @@ public class DwcaNameIndexer extends ALANameIndexer {
             }
             if (StringUtils.isNotBlank(nomenclaturalStatus)) {
                 doc.add(new StoredField(NameIndexField.NOMENCLATURAL_STATUS.toString(), nomenclaturalStatus));
+            }
+            if (StringUtils.isNotBlank(establishmentMeans)) {
+                doc.add(new StoredField(NameIndexField.ESTABLISHMENT_MEANS.toString(), establishmentMeans));
             }
             if(StringUtils.isNotBlank(genus)) {
                 //stored no need to search on
@@ -732,6 +738,7 @@ public class DwcaNameIndexer extends ALANameIndexer {
 
         String nomenclaturalStatus = doc.get(NameIndexField.NOMENCLATURAL_STATUS.toString()); // *** RR ??
         //do we actually want to put the nomenclaturalStatus in its own field, or simply use it to build the nameComplete?
+        String establishmentMeans = doc.get(NameIndexField.ESTABLISHMENT_MEANS.toString());
         //now insert this term
         Document indexDoc = this.createALAIndexDocument(
                 name,
@@ -746,7 +753,8 @@ public class DwcaNameIndexer extends ALANameIndexer {
                 nameComplete,
                 otherNames,
                 score,
-                nomenclaturalStatus);
+                nomenclaturalStatus,
+                establishmentMeans);
         writer.addDocument(indexDoc);
         return right + 1;
     }
@@ -800,7 +808,7 @@ public class DwcaNameIndexer extends ALANameIndexer {
         }
         Document doc = createALAIndexDocument(scientificName, id, lsid, null, null,
                 kingdom, null, phylum, null, clazz, null, order, null, family, null, genus, null, null, null, null, null,
-                acceptedLsid, specificEpithet, infraspecificEpithet, author, nameComplete, otherNames, priority, nomenclaturalStatus);
+                acceptedLsid, specificEpithet, infraspecificEpithet, author, nameComplete, otherNames, priority, nomenclaturalStatus, null);
         if (doc != null && synonymType != null) {
             try {
                 doc.add(new TextField(NameIndexField.SYNONYM_TYPE.toString(), synonymType, Field.Store.YES));

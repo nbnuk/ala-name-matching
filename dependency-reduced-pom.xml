@@ -10,7 +10,7 @@
   <groupId>au.org.ala</groupId>
   <artifactId>ala-name-matching</artifactId>
   <name>ALA Name Matching (for Lucene 6 or above)</name>
-  <version>3.5-SNAPSHOT</version>
+  <version>3.5-SNAPSHOT-NBN</version>
   <scm>
     <connection>scm:git:git@github.com:AtlasOfLivingAustralia/ala-name-matching.git</connection>
     <developerConnection>scm:git:git@github.com:AtlasOfLivingAustralia/ala-name-matching.git</developerConnection>
