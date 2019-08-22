@@ -20,7 +20,7 @@ public class ALANameSearcherTest {
 
     @org.junit.BeforeClass
     public static void init() throws Exception {
-        searcher = new ALANameSearcher("/data/lucene/namematching-20190213");
+        searcher = new ALANameSearcher("/data/lucene/namematching");
     }
 
     @Test
