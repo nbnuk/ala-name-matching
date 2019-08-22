@@ -7,3 +7,6 @@ src/main/resources/git.properties
 .classpath
 .project
 .settings/
+classes/
+executable*
+.DS_Store
