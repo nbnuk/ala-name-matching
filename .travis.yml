@@ -16,7 +16,7 @@ before_install:
 - cd $TRAVIS_BUILD_DIR
 
 script:
-- "[ \"${TRAVIS_PULL_REQUEST}\" = \"false\" ] && mvn -P travis clean install deploy || mvn -P travis clean install"
+- "[ \"${TRAVIS_PULL_REQUEST}\" = \"false\" ] && mvn -P travis clean install deploy -Dmaven.test.skip=true || mvn -P travis clean install -Dmaven.test.skip=true "
 - echo "skipping tests until customised to NBN data"
 
 env:
