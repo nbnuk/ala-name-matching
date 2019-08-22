@@ -40,6 +40,8 @@ public class NameSearchResult {
     private String left, right;
     private LinnaeanRankClassification rankClass;
     private RankType rank;
+    private String nomenclaturalStatus;
+    private String establishmentMeans;
     /** The type of match that was performed */
     private MatchType matchType;
     private SynonymType synonymType; //store that type of synonym that this name is
@@ -67,6 +69,8 @@ public class NameSearchResult {
             name = doc.get(NameIndexField.NAME.toString());
         if (name == null)
             name = doc.get(NameIndexField.NAME_COMPLETE.toString());
+        nomenclaturalStatus = doc.get(NameIndexField.NOMENCLATURAL_STATUS.toString());
+        establishmentMeans = doc.get(NameIndexField.ESTABLISHMENT_MEANS.toString());
         rankClass = new LinnaeanRankClassification(doc.get(RankType.KINGDOM.getRank()),
                 doc.get(RankType.PHYLUM.getRank()),
                 doc.get(RankType.CLASS.getRank()),
@@ -75,6 +79,7 @@ public class NameSearchResult {
                 doc.get(RankType.GENUS.getRank()),
                 name);
         rankClass.setSpecies(doc.get(RankType.SPECIES.getRank()));
+        rankClass.setNomenclaturalStatus(nomenclaturalStatus);
         //add the ids
         rankClass.setKid(doc.get("kid"));
         rankClass.setPid(doc.get("pid"));
@@ -174,6 +179,23 @@ public class NameSearchResult {
     }
 
     /**
+     *
+     * @return The nomenclatural status
+     */
+    public String getNomenclaturalStatus() {
+        return nomenclaturalStatus;
+    }
+
+    public void setNomenclaturalStatus(String nomenStatus) { nomenclaturalStatus = nomenStatus; }
+
+    /**
+     * @return the establishment means for the taxon
+     */
+    public String getEstablishmentMeans() { return establishmentMeans; }
+
+    public void setEstablishmentMeans(String establishMeans) { establishmentMeans = establishMeans; }
+
+    /**
      * When the LSID for the synonym is null return the ID for the synonym
      *
      * @return
@@ -197,7 +219,7 @@ public class NameSearchResult {
 
     @Override
     public String toString() {
-        return "Match: " + matchType + " id: " + id + " lsid: " + lsid + " classification: " + rankClass + " synonym: " + acceptedLsid + " rank: " + rank;
+        return "Match: " + matchType + " id: " + id + " lsid: " + lsid + " classification: " + rankClass + " synonym: " + acceptedLsid + " rank: " + rank + " nomenclaturalStatus: " + nomenclaturalStatus + " establishmentMeans: " + establishmentMeans;
     }
 
     public Map<String,String> toMap() {
@@ -215,6 +237,12 @@ public class NameSearchResult {
         map.put("Synonym", acceptedLsid);
         if(matchType !=null) {
             map.put("Match type", matchType.toString());
+        }
+        if(nomenclaturalStatus !=null) {
+            map.put("Nomenclatural status", nomenclaturalStatus);
+        }
+        if(establishmentMeans !=null) {
+            map.put("Establishment means", establishmentMeans);
         }
         return map;
     }

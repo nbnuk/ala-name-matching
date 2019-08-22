@@ -19,9 +19,9 @@ public class MatchMetrics implements Comparable<MatchMetrics> {
     /** The default match level */
     public static final float DEFAULT_MATCH = 1.0f;
     /** Weights for match terms for things we expect to have a higher taxonomy */
-    final float[] WEIGHTS = new float[] { 4.0f, 1.0f, 1.0f, 1.0f, 1.5f, 2.0f, 1.0f, 1.0f, 5.0f, 0.5f };
+    final float[] WEIGHTS = new float[] { 4.0f, 1.0f, 1.0f, 1.0f, 1.5f, 2.0f, 1.0f, 1.0f, 5.0f, 5.0f, 0.5f }; //add nomenclatureStatus weight
     /** Weights for match terms for things we don't expect to have a higher taxonomy or, possibly, a rank */
-    final float[] SYNONYM_WEIGHTS = new float[] { 2.0f, 1.0f, 1.0f, 1.0f, 1.5f, 0.5f, 1.0f, 1.0f, 5.0f, 0.5f };
+    final float[] SYNONYM_WEIGHTS = new float[] { 2.0f, 1.0f, 1.0f, 1.0f, 1.5f, 0.5f, 1.0f, 1.0f, 5.0f, 5.0f, 0.5f }; //add nomenclatureStatus weight
 
 
     /** The taxon priority */
@@ -113,12 +113,13 @@ public class MatchMetrics implements Comparable<MatchMetrics> {
         matchVector[7] = this.compareTerm(query.infraspecificEpithet, result.infraspecificEpithet, false, similarity);
         // We assume that scientificName matches, otherwise, why bother?
         matchVector[8] = this.compareTerm(query.authorship, result.authorship, false, similarity);
+        matchVector[9] = this.compareTerm(query.nomenclaturalStatus, result.nomenclaturalStatus, false, similarity);
         if (StringUtils.isNotEmpty(query.rank) && StringUtils.isNotEmpty(result.rank)) {
             RankType r1 = RankType.getForStrRank(query.rank);
             RankType r2 = RankType.getForStrRank(result.rank);
             if (!r1.isLoose() && !r2.isLoose()) {
                 // Allow some slop-over
-                matchVector[9] = Math.max(0.01f, 1.0f - (0.8f * Math.abs(r1.getId() - r2.getId())) / (RankType.PHYLUM.getId() - RankType.KINGDOM.getId()));
+                matchVector[10] = Math.max(0.01f, 1.0f - (0.8f * Math.abs(r1.getId() - r2.getId())) / (RankType.PHYLUM.getId() - RankType.KINGDOM.getId()));
             }
         }
         for (int i = 0; i < matchVector.length; i++) {
