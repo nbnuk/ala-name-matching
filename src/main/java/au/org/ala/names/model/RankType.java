@@ -27,7 +27,7 @@ import java.util.*;
  * @author Natasha
  */
 public enum RankType {
-
+    // *** see also bie-index config file taxonRanks.json which should be kept in-sync
     DOMAIN(800, "kingdom", Rank.DOMAIN, null, 800, false, "http://rs.tdwg.org/ontology/voc/TaxonRank#Domain", "Domain", "Superkingdom", "Empire"),
     KINGDOM(1000, "kingdom", Rank.KINGDOM, 2f, 1000, false, "http://rs.tdwg.org/ontology/voc/TaxonRank#Kingdom", "Kingdom"),
     SUBKINGDOM(1200, "subkingdom", Rank.SUBKINGDOM, null, 1200, false, "http://rs.tdwg.org/ontology/voc/TaxonRank#Subkingdom"),
@@ -69,9 +69,9 @@ public enum RankType {
     SUPERFAMILY(4500, "superfamily", Rank.SUPERFAMILY, null, 4500, false,  "Superfamily"),
     FAMILY(5000, "family", Rank.FAMILY, 2f, 5000, false, "http://rs.tdwg.org/ontology/voc/TaxonRank#Family", "Family"),
     SUBFAMILY(5500, "subfamily", Rank.SUBFAMILY, null, 5500, true, "http://rs.tdwg.org/ontology/voc/TaxonRank#Subfamily"),
-    INFRAFAMILY(5525, "infrafamily", Rank.INFRAFAMILY, null, 5525, false, "http://rs.tdwg.org/ontology/voc/TaxonRank#Infrafamily"),
-    SUPERTRIBE(5550, "supertribe", Rank.SUPERTRIBE, null, 5550, false, "http://rs.tdwg.org/ontology/voc/TaxonRank#TSupertribe"),
+    INFRAFAMILY(5550, "infrafamily", Rank.INFRAFAMILY, null, 5550, false, "http://rs.tdwg.org/ontology/voc/TaxonRank#Infrafamily"),
     FAMILY_AGGREGATE(5560, "family aggregate", null, null, 5560, false),
+    SUPERTRIBE(5580, "supertribe", Rank.SUPERTRIBE, null, 5580, false, "http://rs.tdwg.org/ontology/voc/TaxonRank#TSupertribe"),
     TRIBE(5600, "tribe", Rank.TRIBE, null, 5600, false, "http://rs.tdwg.org/ontology/voc/TaxonRank#Tribe"),
     SUBTRIBE(5700, "subtribe", Rank.SUBTRIBE, null, 5700, false, "http://rs.tdwg.org/ontology/voc/TaxonRank#Subtribe"),
     SUPERGENUS(5900, "genus", null, null, 5900, false, "http://rs.tdwg.org/ontology/voc/TaxonRank#Supergenus", "Supergenus"),
@@ -89,7 +89,7 @@ public enum RankType {
     INFRAGENERICNAME(6925, "infragenericname", Rank.INFRAGENERIC_NAME, null, 6925, false),
     SPECIES_GROUP(6950, "species group", Rank.SPECIES_AGGREGATE, null, 6950, true, "aggregate species", "Aggregate Species", "Species Group"),
     FUNCTIONAL_GROUP(6951, "functional group", null, null, 6951, true),
-    SPECIES_AGGREGATE(6952, "species aggregate", null, null, 6952, true),
+    SPECIES_AGGREGATE(6952, "species aggregate", Rank.SPECIES_AGGREGATE, null, 6952, true),
     SUPERSPECIES(6960, "superspecies", null, null, 6960, false, "http://rs.tdwg.org/ontology/voc/TaxonRank#Species", "Superspecies"),
     SPECIES_SUBGROUP(6975, "species subgroup", null, null, 6975, true, "Species Subroup"),
     SPECIES(7000, "species", Rank.SPECIES, 2f, 7000, false, "http://rs.tdwg.org/ontology/voc/TaxonRank#Species", "Species"),
