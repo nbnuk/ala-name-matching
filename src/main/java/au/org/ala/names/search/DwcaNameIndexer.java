@@ -458,6 +458,7 @@ public class DwcaNameIndexer extends ALANameIndexer {
             String datasetID = core.value(DwcTerm.datasetID);
             String nomenclaturalStatus = core.value(DwcTerm.nomenclaturalStatus);
             String establishmentMeans = core.value(DwcTerm.establishmentMeans);
+            String habitat = core.value(DwcTerm.habitat);
             nameComplete = this.buildNameComplete(scientificName, scientificNameAuthorship, nameComplete, nomenclaturalStatus);
             //add and store the identifier for the record
             doc.add(new StringField(NameIndexField.ID.toString(), id, Field.Store.YES));
@@ -488,6 +489,9 @@ public class DwcaNameIndexer extends ALANameIndexer {
             }
             if (StringUtils.isNotBlank(establishmentMeans)) {
                 doc.add(new StoredField(NameIndexField.ESTABLISHMENT_MEANS.toString(), establishmentMeans));
+            }
+            if (StringUtils.isNotBlank(habitat)) {
+                doc.add(new StoredField(NameIndexField.HABITAT.toString(), habitat));
             }
             if(StringUtils.isNotBlank(genus)) {
                 //stored no need to search on
@@ -739,6 +743,7 @@ public class DwcaNameIndexer extends ALANameIndexer {
         String nomenclaturalStatus = doc.get(NameIndexField.NOMENCLATURAL_STATUS.toString()); // *** RR ??
         //do we actually want to put the nomenclaturalStatus in its own field, or simply use it to build the nameComplete?
         String establishmentMeans = doc.get(NameIndexField.ESTABLISHMENT_MEANS.toString());
+        String habitat = doc.get(NameIndexField.HABITAT.toString());
         //now insert this term
         Document indexDoc = this.createALAIndexDocument(
                 name,
@@ -754,7 +759,8 @@ public class DwcaNameIndexer extends ALANameIndexer {
                 otherNames,
                 score,
                 nomenclaturalStatus,
-                establishmentMeans);
+                establishmentMeans,
+                habitat);
         writer.addDocument(indexDoc);
         return right + 1;
     }
@@ -808,7 +814,7 @@ public class DwcaNameIndexer extends ALANameIndexer {
         }
         Document doc = createALAIndexDocument(scientificName, id, lsid, null, null,
                 kingdom, null, phylum, null, clazz, null, order, null, family, null, genus, null, null, null, null, null,
-                acceptedLsid, specificEpithet, infraspecificEpithet, author, nameComplete, otherNames, priority, nomenclaturalStatus, null);
+                acceptedLsid, specificEpithet, infraspecificEpithet, author, nameComplete, otherNames, priority, nomenclaturalStatus, null, null);
         if (doc != null && synonymType != null) {
             try {
                 doc.add(new TextField(NameIndexField.SYNONYM_TYPE.toString(), synonymType, Field.Store.YES));
@@ -900,7 +906,7 @@ public class DwcaNameIndexer extends ALANameIndexer {
                             acceptedNameUsageID,
                             score < 0 ? defaultScore : score,
                             taxonomicStatus,
-                            nomenclaturalStatus);
+                            nomenclaturalStatus); //don't add habitat at the moment
 
 
                     if(doc != null){

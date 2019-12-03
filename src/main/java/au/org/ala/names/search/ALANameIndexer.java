@@ -355,7 +355,7 @@ public class ALANameIndexer {
                     values[POS_O], values[POS_OID], values[POS_F], values[POS_FID],
                     values[POS_G], values[POS_GID], values[POS_S], values[POS_SID],
                     values[POS_LFT], values[POS_RGT], acceptedValues,
-                    values[POS_SP_EPITHET], values[POS_INFRA_EPITHET], values[POS_AUTHOR], null, null, priority, null, null);
+                    values[POS_SP_EPITHET], values[POS_INFRA_EPITHET], values[POS_AUTHOR], null, null, priority, null, null, null);
 
 
             //add the excluded information if applicable
@@ -811,19 +811,23 @@ public class ALANameIndexer {
         return createALAIndexDocument(name, id, lsid, author, rank, rankId, left, right, cl, nameComplete, otherNames, priority, nomenclaturalStatus, null);
     }
 
-    public Document createALAIndexDocument(String name, String id, String lsid, String author, String rank, String rankId, String left, String right, LinnaeanRankClassification cl, String nameComplete, Collection<String> otherNames, int priority, String nomenclaturalStatus, String establishmentMeans){
+    public Document createALAIndexDocument(String name, String id, String lsid, String author, String rank, String rankId, String left, String right, LinnaeanRankClassification cl, String nameComplete, Collection<String> otherNames, int priority, String nomenclaturalStatus, String establishmentMeans) {
+        return createALAIndexDocument(name, id, lsid, author, rank, rankId, left, right, cl, nameComplete, otherNames, priority, nomenclaturalStatus, establishmentMeans,null);
+    }
+
+    public Document createALAIndexDocument(String name, String id, String lsid, String author, String rank, String rankId, String left, String right, LinnaeanRankClassification cl, String nameComplete, Collection<String> otherNames, int priority, String nomenclaturalStatus, String establishmentMeans, String habitat){
         if(cl == null)
             cl = new LinnaeanRankClassification();
         return createALAIndexDocument(name, id, lsid, rankId, rank, cl.getKingdom(), cl.getKid(), cl.getPhylum()
                 , cl.getPid(), cl.getKlass(), cl.getCid(), cl.getOrder(), cl.getOid(), cl.getFamily(),
-                cl.getFid(), cl.getGenus(), cl.getGid(), cl.getSpecies(), cl.getSid(), left, right, null, null, null, author, nameComplete, otherNames, priority, nomenclaturalStatus, establishmentMeans);
+                cl.getFid(), cl.getGenus(), cl.getGid(), cl.getSpecies(), cl.getSid(), left, right, null, null, null, author, nameComplete, otherNames, priority, nomenclaturalStatus, establishmentMeans, habitat);
     }
 
     protected Document createALASynonymDocument(String scientificName, String author, String nameComplete, Collection<String> otherNames, String id, String lsid, String nameLsid, String acceptedLsid, String acceptedId, int priority, String synonymType, String nomenclaturalStatus) {
         lsid = StringUtils.isBlank(lsid) ? nameLsid : lsid;
         Document doc = createALAIndexDocument(scientificName, id, lsid, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                acceptedLsid, null, null, author, nameComplete, otherNames, priority, nomenclaturalStatus, null);
+                acceptedLsid, null, null, author, nameComplete, otherNames, priority, nomenclaturalStatus, null, null);
         if (doc != null && synonymType != null) {
             try {
                 doc.add(new TextField(NameIndexField.SYNONYM_TYPE.toString(), synonymType, Store.YES));
@@ -843,7 +847,7 @@ public class ALANameIndexer {
                                             String oid, String family, String fid, String genus, String gid,
                                             String species, String sid, String left, String right, String acceptedConcept, String specificEpithet,
                                             String infraspecificEpithet, String author, String nameComplete, Collection<String> otherNames,
-                                            int priority, String nomenclaturalStatus, String establishmentMeans) {
+                                            int priority, String nomenclaturalStatus, String establishmentMeans, String habitat) {
         //
         if (isBlacklisted(name)) {
             System.out.println(name + " has been blacklisted");
@@ -959,6 +963,10 @@ public class ALANameIndexer {
 
         if (StringUtils.trimToNull(establishmentMeans) != null) {
             doc.add(new StringField(NameIndexField.ESTABLISHMENT_MEANS.toString(), establishmentMeans, Store.YES));
+        }
+
+        if (StringUtils.trimToNull(habitat) != null) {
+            doc.add(new StringField(NameIndexField.HABITAT.toString(), habitat, Store.YES));
         }
 
         //Generate the canonical
