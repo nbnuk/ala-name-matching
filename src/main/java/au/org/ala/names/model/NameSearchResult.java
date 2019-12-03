@@ -42,6 +42,8 @@ public class NameSearchResult {
     private RankType rank;
     private String nomenclaturalStatus;
     private String establishmentMeans;
+    private String habitat;
+    private String author;
     /** The type of match that was performed */
     private MatchType matchType;
     private SynonymType synonymType; //store that type of synonym that this name is
@@ -71,6 +73,8 @@ public class NameSearchResult {
             name = doc.get(NameIndexField.NAME_COMPLETE.toString());
         nomenclaturalStatus = doc.get(NameIndexField.NOMENCLATURAL_STATUS.toString());
         establishmentMeans = doc.get(NameIndexField.ESTABLISHMENT_MEANS.toString());
+        habitat = doc.get(NameIndexField.HABITAT.toString());
+        author = doc.get(NameIndexField.AUTHOR.toString());
         rankClass = new LinnaeanRankClassification(doc.get(RankType.KINGDOM.getRank()),
                 doc.get(RankType.PHYLUM.getRank()),
                 doc.get(RankType.CLASS.getRank()),
@@ -196,6 +200,20 @@ public class NameSearchResult {
     public void setEstablishmentMeans(String establishMeans) { establishmentMeans = establishMeans; }
 
     /**
+     * @return the habitat for the taxon
+     */
+    public String getHabitat() { return habitat; }
+
+    public void setHabitat(String habitatNew) { habitat = habitatNew; }
+
+    /**
+     * @return the author for the taxon
+     */
+    public String getAuthor() { return author; }
+
+    public void setAuthor(String authorNew) { author = authorNew; }
+
+    /**
      * When the LSID for the synonym is null return the ID for the synonym
      *
      * @return
@@ -219,7 +237,7 @@ public class NameSearchResult {
 
     @Override
     public String toString() {
-        return "Match: " + matchType + " id: " + id + " lsid: " + lsid + " classification: " + rankClass + " synonym: " + acceptedLsid + " rank: " + rank + " nomenclaturalStatus: " + nomenclaturalStatus + " establishmentMeans: " + establishmentMeans;
+        return "Match: " + matchType + " id: " + id + " lsid: " + lsid + " classification: " + rankClass + " synonym: " + acceptedLsid + " rank: " + rank + " nomenclaturalStatus: " + nomenclaturalStatus + " establishmentMeans: " + establishmentMeans + " habitat: " + habitat + " author: " + author;
     }
 
     public Map<String,String> toMap() {
@@ -229,7 +247,7 @@ public class NameSearchResult {
         if(rankClass !=null) {
             map.put("Classification", rankClass.toCSV(','));
             map.put("Scientific name", rankClass.getScientificName());
-            map.put("Authorship", rankClass.getAuthorship());
+            map.put("Authorship", rankClass.getAuthorship()); //TODO: why is this null?
         }
         if(rank !=null) {
             map.put("Rank", rank.toString());
@@ -243,6 +261,12 @@ public class NameSearchResult {
         }
         if(establishmentMeans !=null) {
             map.put("Establishment means", establishmentMeans);
+        }
+        if(habitat !=null) {
+            map.put("Habitat", habitat);
+        }
+        if(author !=null) {
+            map.put("Author", author);
         }
         return map;
     }

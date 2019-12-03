@@ -49,7 +49,8 @@ public enum NameIndexField {
     /* Stores the priority score associated with a taxon */
     PRIORITY("priority"),
     NOMENCLATURAL_STATUS("nomenclatural_status"), //NBN: name attribute like 'sensu lato'
-    ESTABLISHMENT_MEANS("establishment_means"); //NBN: native / non-native
+    ESTABLISHMENT_MEANS("establishment_means"), //NBN: native / non-native
+    HABITAT("habitat"); //NBN: habitat(s)
     String name;
 
     NameIndexField(String name) {
