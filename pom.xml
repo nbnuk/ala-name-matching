@@ -11,7 +11,7 @@
     <artifactId>ala-name-matching</artifactId>
     <packaging>jar</packaging>
     <!-- Major version increment due to package structure change -->
-    <version>3.5.0-NBN</version>
+    <version>3.5.1-NBN</version>
     <name>ALA Name Matching (for Lucene 6 or above)</name>
     <!-- SCM entry that points to SVN directory that contains pom -->
     <scm>
@@ -180,29 +180,6 @@
                         <encoding>UTF8</encoding>
                     </configuration>
                 </plugin>
-<!--                <plugin>-->
-<!--                    <groupId>org.apache.maven.plugins</groupId>-->
-<!--                    <artifactId>maven-assembly-plugin</artifactId>-->
-<!--                    <configuration>-->
-<!--                        <descriptors>-->
-<!--                            <descriptor>src/assembly/assembly.xml</descriptor>-->
-<!--                        </descriptors>-->
-<!--                        <archive>-->
-<!--                            <manifest>-->
-<!--                                <addClasspath>true</addClasspath>-->
-<!--                                <classpathPrefix>lib/</classpathPrefix>-->
-<!--                            </manifest>-->
-<!--                        </archive>-->
-<!--                    </configuration>-->
-<!--                    <executions>-->
-<!--                        <execution>-->
-<!--                            <phase>package</phase>-->
-<!--                            <goals>-->
-<!--                                <goal>single</goal>-->
-<!--                            </goals>-->
-<!--                        </execution>-->
-<!--                    </executions>-->
-<!--                </plugin>-->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
@@ -232,35 +209,6 @@
                         </execution>
                     </executions>
                 </plugin>
-<!--                <plugin>-->
-<!--                    <groupId>org.apache.maven.plugins</groupId>-->
-<!--                    <artifactId>maven-jar-plugin</artifactId>-->
-<!--                    <configuration>-->
-<!--                        <archive>-->
-<!--                            <manifest>-->
-<!--                                <addClasspath>true</addClasspath>-->
-<!--                                <classpathPrefix>lib/</classpathPrefix>-->
-<!--                                <mainClass>au.org.ala.names.search.DwcaNameIndexer</mainClass>-->
-<!--                            </manifest>-->
-<!--                        </archive>-->
-<!--                    </configuration>-->
-<!--                </plugin>-->
-<!--                <plugin>-->
-<!--                    <groupId>org.apache.maven.plugins</groupId>-->
-<!--                    <artifactId>maven-shade-plugin</artifactId>-->
-<!--                    <version>3.1.1</version>-->
-<!--                    <configuration>-->
-
-<!--                    </configuration>-->
-<!--                    <executions>-->
-<!--                        <execution>-->
-<!--                            <phase>package</phase>-->
-<!--                            <goals>-->
-<!--                                <goal>shade</goal>-->
-<!--                            </goals>-->
-<!--                        </execution>-->
-<!--                    </executions>-->
-<!--                </plugin>-->
             </plugins>
         </build>
         </profile>
