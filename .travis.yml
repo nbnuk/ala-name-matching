@@ -7,6 +7,7 @@ branches:
   only:
   - master
   - develop
+  - FFTF
 before_install:
 - mkdir -p ~/.m2; wget -q -O ~/.m2/settings.xml https://raw.githubusercontent.com/nbnuk/travis-build-configuration/master/travis_maven_settings_simple.xml
 - sudo mkdir -p /data/lucene; sudo wget -O /data/lucene/namematching-20190816.tgz https://github.com/nbnuk/ala-name-matching/raw/master/built_db/namematching-20190816.tgz
