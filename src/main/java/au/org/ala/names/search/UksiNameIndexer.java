@@ -176,6 +176,10 @@ public class UksiNameIndexer extends ALANameIndexer{
             this.establishmentMeans = establishmentMeans;
             this.habitat = habitat;
         }
+
+        public String toString(){
+            return String.format("nomenclaturalStatus:%s establishmentMeans:%s habitat:%s",nomenclaturalStatus,establishmentMeans,habitat);
+        }
     }
 
     private void addUksiFieldsToALAIndexDocument(Document doc, UksiIndexFields uksiIndexFields){
