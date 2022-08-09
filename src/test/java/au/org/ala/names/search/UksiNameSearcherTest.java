@@ -31,11 +31,15 @@ import static org.junit.Assert.fail;
  * @author Natasha, Tommy
  */
 public class UksiNameSearcherTest {
+    public static final String INDEX_DIRECTORY = "/data/lucene/uksi-namatching-index-test/namematching_TEST_INDEX_2021-12-13";
+    public static final String DERIVED_INDEX_DATA = "/data/lucene/uksi-namatching-index-test/derived-index-data-TEST_INDEX_2021-12-13.txt";
+    public static final String VERNACULAR_CSV = "/data/lucene/uksi-namatching-index-test/sources/UKSI_DwCA_TEST_INDEX_2021-12-13/vernacular.csv";
+
     private static ALANameSearcher searcher;
 
     @org.junit.BeforeClass
     public static void init() throws Exception {
-        searcher = new ALANameSearcher("/data/lucene/namematching_FFTF_INDEX_2021-12-13");
+        searcher = new ALANameSearcher(INDEX_DIRECTORY);
     }
 
 
@@ -44,7 +48,7 @@ public class UksiNameSearcherTest {
     public void indexSmokeTest2() throws IOException {
         Path temp = Files.createTempFile("indexSmokeTest","txt");
         saveIndexSearchResultsToFile(temp.toFile());
-        File testFile = new File("/data/lucene/sources/UKSI_DwCA_TEST_INDEX_2021-12-13/generated-index-test.txt");
+        File testFile = new File(DERIVED_INDEX_DATA);
         InputStream inputStream1 = new FileInputStream(temp.toFile());
         InputStream inputStream2 = new FileInputStream(testFile);
 
@@ -55,10 +59,10 @@ public class UksiNameSearcherTest {
     public void indexSmokeTest() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         String line;
-        try (BufferedReader br = new BufferedReader(new FileReader("/data/lucene/sources/UKSI_DwCA_TEST_INDEX_2021-12-13/generated-index-test.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(DERIVED_INDEX_DATA))) {
 
             ObjectMapper mapper2 = new ObjectMapper();
-            CSVReader reader = new CSVReaderBuilder(new FileReader("/data/lucene/sources/UKSI_DwCA_TEST_INDEX_2021-12-13/vernacular.csv")).withSkipLines(1).build();
+            CSVReader reader = new CSVReaderBuilder(new FileReader(VERNACULAR_CSV)).withSkipLines(1).build();
             int count = 0;
             String[] record;
             while ((record = reader.readNext()) != null && count++ < 1000000) {
@@ -67,8 +71,6 @@ public class UksiNameSearcherTest {
 
                     //NameSearchResult expectedNsr = mapper.readValue(line, NameSearchResult.class);
                     //assertEquals(expectedNsr, actualNsr);
-                System.out.println(line);
-                System.out.println(mapper2.writeValueAsString(actualNsr));
 
                     Map expectedNsrAsMap = mapper.readValue(line, HashMap.class);
                     assertEquals(expectedNsrAsMap.get("id"), actualNsr.getId());
@@ -80,7 +82,10 @@ public class UksiNameSearcherTest {
                     assertEquals(expectedNsrAsMap.get("rank"), actualNsr.getRank().name());
                     assertEquals(expectedNsrAsMap.get("nomenclaturalStatus"), actualNsr.getNomenclaturalStatus());
                     assertEquals(expectedNsrAsMap.get("establishmentMeans"), actualNsr.getEstablishmentMeans());
+                    assertEquals(expectedNsrAsMap.get("habitat"), actualNsr.getHabitat());
+                    assertEquals(expectedNsrAsMap.get("author"), actualNsr.getAuthor());
                     assertEquals(((Map) expectedNsrAsMap.get("rankClassification")).get("scientificName"), actualNsr.getRankClassification().getScientificName());
+                    assertEquals(((Map) expectedNsrAsMap.get("rankClassification")).get("nomenclaturalStatus"), actualNsr.getRankClassification().getNomenclaturalStatus());
             }
         }
         catch (Exception e){
