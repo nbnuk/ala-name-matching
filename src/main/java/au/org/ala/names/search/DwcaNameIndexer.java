@@ -454,7 +454,7 @@ public class DwcaNameIndexer extends UksiNameIndexer {
             String infraspecificEpithet = core.value(DwcTerm.infraspecificEpithet);
             String taxonRank = core.value(DwcTerm.taxonRank);
             String datasetID = core.value(DwcTerm.datasetID);
-            UksiIndexFields uksiIndexFields = new UksiIndexFields(core.value(DwcTerm.nomenclaturalStatus), core.value(DwcTerm.nomenclaturalStatus), core.value(DwcTerm.establishmentMeans));
+            UksiIndexFields uksiIndexFields = new UksiIndexFields(core.value(DwcTerm.nomenclaturalStatus), core.value(DwcTerm.establishmentMeans), core.value(DwcTerm.habitat));
             nameComplete = this.buildNameComplete(scientificName, scientificNameAuthorship, nameComplete, uksiIndexFields.nomenclaturalStatus);
             //add and store the identifier for the record
             doc.add(new StringField(NameIndexField.ID.toString(), id, Field.Store.YES));
