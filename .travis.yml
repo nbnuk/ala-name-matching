@@ -7,20 +7,20 @@ branches:
   only:
   - master
   - develop
-
+  - master-nbn
 before_install:
-- mkdir -p ~/.m2; wget -q -O ~/.m2/settings.xml https://raw.githubusercontent.com/AtlasOfLivingAustralia/travis-build-configuration/master/travis_maven_settings_simple.xml
-- sudo mkdir -p /data/lucene; sudo wget -O /data/lucene/namematching-20210811-3.tgz https://archives.ala.org.au/archives/nameindexes/20210811-3/namematching-20210811-3.tgz
-- cd /data/lucene
-- sudo tar zxvf namematching-20210811-3.tgz
-- sudo ln -s namematching-20210811-3 namematching
-- ls -laF
-- cd $TRAVIS_BUILD_DIR
+- mkdir -p ~/.m2; wget -q -O ~/.m2/settings.xml https://raw.githubusercontent.com/nbnuk/travis-build-configuration/master/travis_maven_settings_simple.xml
+#- sudo mkdir -p /data/lucene; sudo wget -O /data/lucene/namematching-20190816.tgz https://github.com/nbnuk/ala-name-matching/raw/master/built_db/namematching-20190816.tgz
+#- cd /data/lucene
+#- sudo tar zxvf namematching-20190816.tgz
+#- ls -laF
+#- cd $TRAVIS_BUILD_DIR
 
 script:
-- 'if [ "${TRAVIS_PULL_REQUEST}" = "false" ]; then mvn -P travis clean install deploy; else mvn -P travis clean install; fi'
+- "[ \"${TRAVIS_PULL_REQUEST}\" = \"false\" ] && mvn -P travis clean install deploy -Dmaven.test.skip=true || mvn -P travis clean install -Dmaven.test.skip=true "
+- echo "skipping tests until customised to NBN data"
 
 env:
   global:
-  - secure: KccCleAFdCTTPEtUYcsBSsIbIIvpbZJ16aV0F8ydRErupFrTIsniWM5xmyUyL3VYaViIViBFke1hAiVEoYG3U33a4X3RVdZV0vS6KhS1K36q0jg61wnyzYqucVk8XBh8X0JHS6DmZ++IV2JAEpY6mEWKG+LpNGkyZ58gqj1AJsY=
-  - secure: c7HoUh8T4Qdw9tdQCukkENzLkn9dipvxT3PDf9lM/znrsr8ef7h/qXkLs+85comuoJL2vJ1VcB9RnAwJPVq/IUUchAm2Gj87DYGRPKWKXhtBBhgz6nciOwWjXHkCOKzJeF7Ljx12bh1SqELkJUHcNRw7zJb7vh9zZkYQeXg1JfM=
+  - secure: DXzhp09dA+mp76hP8H4TmA+lGYp16R7OlfTOdQzj6xCx7aRto7kdCnEvReevL2gS6aJRWWqceX4ouxOOuTSumEUHjXCpFR9vBXICmqPqNepKS++gAhEM4H3aFDXb4FVAgfWvp6+G7ujjBEwhEETlyFcmFU6oVb3i8UTQUFG23MNB0JyWN3v+R3tWLdyOwmkBGgK63xjfeaM5jF0c2bcYCEuBTVuzVOWPk9CaIQ/YlR55j9TXY5I4E+7cxdCviaxQqXCGce4HTPHYLTw4gyzUrTl10aUH9X8G2UnvlV7X+3FuGVZ66iFGQQ6ggLNRAyfIwzgnhxFgsdWDCHxutUpKM0pme8At6dqGusH5wTx7P+vXgRpOT8p9UMPB7BDEqY7D7oGM60ZAgEYCn24i5Fzcb2xa6+1l08GZAOzDjeCzRG9xzzA3Jjnh3C0L6kgkOvfj3bk1C9mR1WQQukcvnsmUWz6BCdMyp2+NrUk6ir+Rl5D8KJ/zA8vy9KzdorEuoEb8AswNQg/TKzX8t3SF4r0jwwuh0Qo+PSaupw8XwOO4GXjkI4vJp/lL8AALb637+YyoeNlp0w8PZSobkuyZdKa5lfTOzNe5PrQzDcKsWHB7HQM6QmAgCqwDForniJNrG4nLNQK+Umz4Ex2NSnxT675QWCa0fYytBdU68ad/C5X3LDs=
+  - secure: MIdQX0PH0LaEp+wDrHm2ou7RcQbCjTEjfChwlqWy5YJoOHew1CLBjqrTEhQOkI1Lylt/xsg2Qj2VE+f9BWZidzqB9cXOn0qyHqvpPrO40NMgmTjAuSi3xSOPpFX24bUfVS6C329TUKNJT9pEwNkgSHU8wcKWDwVaP0mj9kS87QxBXexqBVw0p7ZtPwGhw7K2yNRzufFN4bCgJ5Rus3g8bdg85+skQO0cf/nX32c06jaqFQpRhWb/Mte7sd/1YOLkVZzTssocxBQwsYMmUxzbrQV59upPbyVYtJ2Ek1cmwP4X0BY2QTdU1jEIp+mEZ4FaviFLt5dIxaZ3KhoaO1QbEIzBxw37EZ4pyt0hU1avHxY2aeQ3oNeejDIKLIejT4rvcszytMZIRqr9Ap+KEvZjr1qCooSI/0u+SNwnL6dTSHLGYYQDJ6TwfMDIslgOuXOdqTqUBt1jj7J7vyf52S/qvDepIQHHRorDapQG7vWWmW7jAjWO+o9TAL/eO4uncr/Knxuzq3lna6XPFzdPjCRK+XUyhAokH+HLulk9DxyFdHV5/I853UzALiKv6oo3OCXuFyA8YHHmkaPM6OUANIJDRGeeF3jhl3hOuM+XwQu9fVTCZpnpkqoo7+mjdJkN4MIsv1GBCtVVRkTT+jZJLs5a6zJ/M0rkHeqtrOtO6VnCXDc=

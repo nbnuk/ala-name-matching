@@ -38,6 +38,10 @@ public class NameSearchResult {
     private String left, right;
     private LinnaeanRankClassification rankClass;
     private RankType rank;
+    private String nomenclaturalStatus;
+    private String establishmentMeans;
+    private String habitat;
+    private String author;
     /** The type of match that was performed */
     private MatchType matchType;
     private SynonymType synonymType; //store that type of synonym that this name is
@@ -66,7 +70,7 @@ public class NameSearchResult {
      * @param synonymType The synonym type
      * @param priority An optional match priority
      */
-    public NameSearchResult(String id, String lsid, String acceptedLsid, String left, String right, LinnaeanRankClassification rankClass, RankType rank, MatchType type, SynonymType synonymType, Integer priority) {
+    public NameSearchResult(String id, String lsid, String acceptedLsid, String left, String right, LinnaeanRankClassification rankClass, RankType rank, MatchType type, SynonymType synonymType, Integer priority, String establishmentMeans, String habitat, String author, String nomenclaturalStatus) {
         this(id, lsid, type);
         this.acceptedLsid = acceptedLsid;
         this.left = left;
@@ -76,6 +80,9 @@ public class NameSearchResult {
         this.synonymType = synonymType;
         if (priority != null)
             this.matchMetrics.setPriority(priority);
+        this.establishmentMeans = establishmentMeans;
+        this.habitat = habitat;
+        this.author = author;
     }
 
     public SynonymType getSynonymType() {
@@ -154,6 +161,37 @@ public class NameSearchResult {
     }
 
     /**
+     *
+     * @return The nomenclatural status
+     */
+    public String getNomenclaturalStatus() {
+        return nomenclaturalStatus;
+    }
+
+    public void setNomenclaturalStatus(String nomenStatus) { nomenclaturalStatus = nomenStatus; }
+
+    /**
+     * @return the establishment means for the taxon
+     */
+    public String getEstablishmentMeans() { return establishmentMeans; }
+
+    public void setEstablishmentMeans(String establishMeans) { establishmentMeans = establishMeans; }
+
+    /**
+     * @return the habitat for the taxon
+     */
+    public String getHabitat() { return habitat; }
+
+    public void setHabitat(String habitatNew) { habitat = habitatNew; }
+
+    /**
+     * @return the author for the taxon
+     */
+    public String getAuthor() { return author; }
+
+    public void setAuthor(String authorNew) { author = authorNew; }
+
+    /**
      * When the LSID for the synonym is null return the ID for the synonym
      *
      * @return
@@ -177,7 +215,7 @@ public class NameSearchResult {
 
     @Override
     public String toString() {
-        return "Match: " + matchType + " id: " + id + " lsid: " + lsid + " classification: " + rankClass + " synonym: " + acceptedLsid + " rank: " + rank;
+        return "Match: " + matchType + " id: " + id + " lsid: " + lsid + " classification: " + rankClass + " synonym: " + acceptedLsid + " rank: " + rank + " nomenclaturalStatus: " + nomenclaturalStatus + " establishmentMeans: " + establishmentMeans + " habitat: " + habitat + " author: " + author;
     }
 
     public Map<String,String> toMap() {
@@ -195,6 +233,18 @@ public class NameSearchResult {
         map.put("Synonym", acceptedLsid);
         if(matchType !=null) {
             map.put("Match type", matchType.toString());
+        }
+        if(nomenclaturalStatus !=null) {
+            map.put("Nomenclatural status", nomenclaturalStatus);
+        }
+        if(establishmentMeans !=null) {
+            map.put("Establishment means", establishmentMeans);
+        }
+        if(habitat !=null) {
+            map.put("Habitat", habitat);
+        }
+        if(author !=null) {
+            map.put("Author", author);
         }
         return map;
     }

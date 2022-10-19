@@ -644,7 +644,7 @@ public class ALANameSearcher {
 
     /**
      * Performs a search.  Any error's encountered will be added to the supplied error set.
-     *
+     *getCommonNameForLSID
      * @param name scientific name ro search for
      * @param cl The classification to perform the match on
      * @param rank Rank to perform the match on , when null no specific rank
@@ -885,6 +885,16 @@ public class ALANameSearcher {
             if (results.size() > 0) {
                 results.get(0).setMatchType(MatchType.TAXON_ID);
                 return results.get(0);
+            } else {
+                //maybe it was a vernacular name ID?
+                String lsid = getLSIDForCommonNameID(id);
+                if (lsid != null) {
+                    List<NameSearchResult> results2 = performSearch(NameIndexField.ID, lsid, null, null, 1, null, false);
+                    if (results2.size() > 0) {
+                        results2.get(0).setMatchType(MatchType.TAXON_ID);
+                        return results2.get(0);
+                    }
+                }
             }
         } catch (SearchResultException e) {
             //this should not happen as we are  not checking for homonyms
@@ -1598,8 +1608,9 @@ public class ALANameSearcher {
     public String getCommonNameForLSID(String lsid) {
         if (lsid != null) {
             Query query = NameIndexField.LSID.search(lsid);
+            Sort sortby = new Sort(new SortField(NameIndexField.PRIORITY_VAL.toString(), SortField.Type.INT, true));
             try {
-                TopDocs results = vernSearcher.search(query, 1);
+                TopDocs results = vernSearcher.search(query, 1, sortby);
                 log.debug("Number of matches for " + lsid + " " + results.totalHits);
                 for (ScoreDoc sdoc : results.scoreDocs) {
                     org.apache.lucene.document.Document doc = vernSearcher.doc(sdoc.doc);
@@ -1625,7 +1636,8 @@ public class ALANameSearcher {
                     BooleanQuery.Builder builder = new BooleanQuery.Builder();
                     builder.add(NameIndexField.LSID.search(lsid), BooleanClause.Occur.MUST);
                     builder.add(NameIndexField.LANGUAGE.search(language), BooleanClause.Occur.MUST);
-                    TopDocs results = vernSearcher.search(builder.build(), 1);
+                    Sort sortby = new Sort(new SortField(NameIndexField.PRIORITY_VAL.toString(), SortField.Type.INT, true));
+                    TopDocs results = vernSearcher.search(builder.build(), 1, sortby);
                     log.debug("Number of matches for " + lsid + " " + results.totalHits);
                     for (ScoreDoc sdoc : results.scoreDocs) {
                         org.apache.lucene.document.Document doc = vernSearcher.doc(sdoc.doc);
@@ -1647,8 +1659,9 @@ public class ALANameSearcher {
     public Set<String> getCommonNamesForLSID(String lsid, int maxNumberOfNames) {
         if (lsid != null) {
             Query query = NameIndexField.LSID.search(lsid);
+            Sort sortby = new Sort(new SortField(NameIndexField.PRIORITY_VAL.toString(), SortField.Type.INT, true));
             try {
-                TopDocs results = vernSearcher.search(query, maxNumberOfNames);
+                TopDocs results = vernSearcher.search(query, maxNumberOfNames, sortby);
                 //if all the results have the same scientific name result the LSID for the first
                 log.debug("Number of matches for " + lsid + " " + results.totalHits);
                 Set<String> names = new HashSet<String>();
@@ -1674,6 +1687,32 @@ public class ALANameSearcher {
     }
 
     /**
+     * Retrieve a single LSID for this ID.
+     * @param id
+     * @return
+     */
+    public String getLSIDForCommonNameID(String id) {
+        if (id != null) {
+            Query query = NameIndexField.ID.search(id);
+            try {
+                TopDocs results = vernSearcher.search(query, 1);
+                //if all the results have the same scientific name result the LSID for the first
+                log.debug("Number of matches for " + id + " " + results.totalHits);
+                String lsid = null;
+
+                for (ScoreDoc sdoc : results.scoreDocs) {
+                    org.apache.lucene.document.Document doc = vernSearcher.doc(sdoc.doc);
+                    lsid = doc.get(NameIndexField.LSID.toString());
+                }
+                return lsid;
+            } catch (IOException e) {
+                log.debug("Unable to access document for common name.", e);
+            }
+        }
+        return null;
+    }
+
+    /**
      * Returns the LSID for the CB name usage for the supplied common name.
      * <p/>
      * When the common name returns more than 1 hit a result is only returned if the accepted
@@ -1686,8 +1725,9 @@ public class ALANameSearcher {
     private String getLSIDForUniqueCommonName(String name) {
         if (name != null) {
             Query query = NameIndexField.SEARCHABLE_COMMON_NAME.search(name);
+            Sort sortby = new Sort(new SortField(NameIndexField.PRIORITY_VAL.toString(), SortField.Type.INT, true));
             try {
-                TopDocs results = vernSearcher.search(query, 10);
+                TopDocs results = vernSearcher.search(query, 10, sortby);
                 //if all the results have the same scientific name result the LSID for the first
                 NameSearchResult best = null;
                 log.debug("Number of matches for " + name + " " + results.totalHits);
@@ -2204,6 +2244,10 @@ public class ALANameSearcher {
             name = doc.get(NameIndexField.NAME.toString());
         if (name == null)
             name = doc.get(NameIndexField.NAME_COMPLETE.toString());
+        String nomenclaturalStatus = doc.get(NameIndexField.NOMENCLATURAL_STATUS.toString());
+        String establishmentMeans = doc.get(NameIndexField.ESTABLISHMENT_MEANS.toString());
+        String habitat = doc.get(NameIndexField.HABITAT.toString());
+        String author = doc.get(NameIndexField.AUTHOR.toString());
         LinnaeanRankClassification rankClass = new LinnaeanRankClassification(doc.get(RankType.KINGDOM.getRank()),
                 doc.get(RankType.PHYLUM.getRank()),
                 doc.get(RankType.CLASS.getRank()),
@@ -2212,6 +2256,7 @@ public class ALANameSearcher {
                 doc.get(RankType.GENUS.getRank()),
                 name);
         rankClass.setSpecies(doc.get(RankType.SPECIES.getRank()));
+        rankClass.setNomenclaturalStatus(nomenclaturalStatus);
         //add the ids
         rankClass.setKid(doc.get("kid"));
         rankClass.setPid(doc.get("pid"));
@@ -2237,7 +2282,7 @@ public class ALANameSearcher {
         String acceptedLsid = doc.get(NameIndexField.ACCEPTED.toString());
         IndexableField pf = doc.getField(NameIndexField.PRIORITY.toString());
         Integer priority = pf == null ? null : pf.numericValue().intValue();
-        NameSearchResult result = new NameSearchResult(id, lsid, acceptedLsid, left, right, rankClass, rank, type, synonymType, priority);
+        NameSearchResult result = new NameSearchResult(id, lsid, acceptedLsid, left, right, rankClass, rank, type, synonymType, priority, establishmentMeans, habitat, author, nomenclaturalStatus);
         result.setRank(rank);
         result.setLeft(left);
         result.setRight(right);

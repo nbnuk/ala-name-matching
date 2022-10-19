@@ -75,7 +75,7 @@ import java.util.regex.Pattern;
  *
  * @author Natasha Quimby (natasha.quimby@csiro.au)
  */
-public class DwcaNameIndexer extends ALANameIndexer {
+public class DwcaNameIndexer extends UksiNameIndexer {
 
     static protected Logger log = Logger.getLogger(DwcaNameIndexer.class);
     static private ALATerm TRIGGER = ALATerm.TaxonVariant; // Force ALA terms to load into the term factory
@@ -386,6 +386,8 @@ public class DwcaNameIndexer extends ALANameIndexer {
             String taxonID = record.id();
             String vernacularName = record.value(DwcTerm.vernacularName);
             String language = record.value(DcTerm.language);
+            String priority = record.value(ALATerm.status);
+            String commonNameID = record.value(DwcTerm.scientificNameID);
             TopDocs result = getLoadIdxResults(null, "lsid", taxonID, 1);
             if(result.totalHits.value > 0){
                 Document sciNameDoc = lsearcher.doc(result.scoreDocs[0].doc);
@@ -396,7 +398,9 @@ public class DwcaNameIndexer extends ALANameIndexer {
                         sciNameDoc.get(NameIndexField.NAME.toString()),
                         taxonID,
                         language,
-                        false);
+                        false,
+                        priority,
+                        commonNameID);
                 this.vernacularIndexWriter.addDocument(doc);
                 count++;
             }
@@ -496,7 +500,8 @@ public class DwcaNameIndexer extends ALANameIndexer {
             String infraspecificEpithet = core.value(DwcTerm.infraspecificEpithet);
             String taxonRank = core.value(DwcTerm.taxonRank);
             String datasetID = core.value(DwcTerm.datasetID);
-            nameComplete = this.buildNameComplete(scientificName, scientificNameAuthorship, nameComplete);
+            UksiIndexFields uksiIndexFields = new UksiIndexFields(core.value(DwcTerm.nomenclaturalStatus), core.value(DwcTerm.establishmentMeans), core.value(DwcTerm.habitat));
+            nameComplete = this.buildNameComplete(scientificName, scientificNameAuthorship, nameComplete, uksiIndexFields.nomenclaturalStatus);
             //add and store the identifier for the record
             doc.add(new StringField(NameIndexField.ID.toString(), id, Field.Store.YES));
             if(StringUtils.isNotBlank(taxonID)){
@@ -521,6 +526,9 @@ public class DwcaNameIndexer extends ALANameIndexer {
             if (StringUtils.isNotBlank(nameComplete)) {
                 doc.add(new StoredField(NameIndexField.NAME_COMPLETE.toString(), nameComplete));
             }
+
+            addUksiIndexFieldsToLoadingIndexDocument(doc, uksiIndexFields);
+
             if(StringUtils.isNotBlank(genus)) {
                 //stored no need to search on
                 doc.add(new StoredField(NameIndexField.GENUS.toString(),genus));
@@ -773,6 +781,7 @@ public class DwcaNameIndexer extends ALANameIndexer {
         // Get other names
         Set<String> otherNames = Sets.newHashSet(doc.getValues(NameIndexField.OTHER_NAMES.toString()));
 
+        UksiIndexFields uksiIndexFields = new UksiIndexFields(doc);
         //now insert this term
         Document indexDoc = this.createALAIndexDocument(
                 name,
@@ -786,14 +795,14 @@ public class DwcaNameIndexer extends ALANameIndexer {
                 newcl,
                 nameComplete,
                 otherNames,
-                score);
+                score,
+                uksiIndexFields);
         writer.addDocument(indexDoc);
         return right + 1;
     }
 
     // Extended to allow use of the accepted information when filling out higher taxonomy
-    @Override
-    protected Document createALASynonymDocument(String scientificName, String author, String nameComplete, Collection<String> otherNames, String id, String lsid, String nameLsid, String acceptedLsid, String acceptedId, int priority, String synonymType) {
+    protected Document createALASynonymDocument(String scientificName, String author, String nameComplete, Collection<String> otherNames, String id, String lsid, String nameLsid, String acceptedLsid, String acceptedId, int priority, String synonymType, String nomenclaturalStatus) {
         lsid = StringUtils.isBlank(lsid) ? nameLsid : lsid;
         Document accepted = null;
         String kingdom = null;
@@ -839,7 +848,7 @@ public class DwcaNameIndexer extends ALANameIndexer {
         }
         Document doc = createALAIndexDocument(scientificName, id, lsid, null, null,
                 kingdom, null, phylum, null, clazz, null, order, null, family, null, genus, null, null, null, 0, 0,
-                acceptedLsid, specificEpithet, infraspecificEpithet, author, nameComplete, otherNames, priority);
+                acceptedLsid, specificEpithet, infraspecificEpithet, author, nameComplete, otherNames, priority, new UksiIndexFields(nomenclaturalStatus, null, null));
         if (doc != null && synonymType != null) {
             try {
                 doc.add(new TextField(NameIndexField.SYNONYM_TYPE.toString(), synonymType, Field.Store.YES));
@@ -1224,6 +1233,18 @@ public class DwcaNameIndexer extends ALANameIndexer {
                     log.warn("Source " + dwca + " is unused");
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void addUksiIndexFieldsToLoadingIndexDocument(Document doc, UksiIndexFields uksiIndexFields) {
+        if (StringUtils.isNotBlank(uksiIndexFields.nomenclaturalStatus)) {
+            doc.add(new StoredField(NameIndexField.NOMENCLATURAL_STATUS.toString(), uksiIndexFields.nomenclaturalStatus));
+        }
+        if (StringUtils.isNotBlank(uksiIndexFields.establishmentMeans)) {
+            doc.add(new StoredField(NameIndexField.ESTABLISHMENT_MEANS.toString(), uksiIndexFields.establishmentMeans));
+        }
+        if (StringUtils.isNotBlank(uksiIndexFields.habitat)) {
+            doc.add(new StoredField(NameIndexField.HABITAT.toString(), uksiIndexFields.habitat));
         }
     }
 }

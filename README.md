@@ -1,4 +1,4 @@
-### ala-name-matching   [![Build Status](https://travis-ci.com/AtlasOfLivingAustralia/ala-name-matching.svg?branch=master)](https://travis-ci.com/AtlasOfLivingAustralia/ala-name-matching)
+### ala-name-matching   [![Build Status](https://travis-ci.com/nbnuk/ala-name-matching.svg?branch=master-nbn)](https://travis-ci.com/nbnuk/ala-name-matching)
 # Atlas Name matching API 
 
 This is the API in use by the Atlas of Living Australia to match scientific name to taxon concepts.

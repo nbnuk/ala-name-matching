@@ -113,8 +113,8 @@ public class ALANameIndexer {
     private final int POS_SRC = 30;
     private final int POS_EXCLUDED = 36;
 
-    private String indexDirectory;
-    private IndexWriter cbIndexWriter;
+    protected String indexDirectory;
+    protected IndexWriter cbIndexWriter;
 
     PhraseNameParser parser = new PhraseNameParser();
     Set<String> knownHomonyms = new HashSet<String>();

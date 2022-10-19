@@ -45,8 +45,27 @@ public class LinnaeanRankClassification {
     protected String scientificName;
     protected String authorship;
     protected String rank;
+    protected String nomenclaturalStatus;
 
     public LinnaeanRankClassification() {
+    }
+
+    public LinnaeanRankClassification(String kingdom, String phylum,
+                                      String klass, String order, String family, String genus,
+                                      String species, String specificEpithet, String subspecies, String infraspecificEpithet,
+                                      String scientificName, String nomenclaturalStatus) {
+        this.kingdom = kingdom;
+        this.phylum = phylum;
+        this.klass = klass;
+        this.order = order;
+        this.family = family;
+        this.genus = genus;
+        this.species = species;
+        this.specificEpithet = specificEpithet;
+        this.subspecies = subspecies;
+        this.infraspecificEpithet = infraspecificEpithet;
+        this.scientificName = scientificName;
+        this.nomenclaturalStatus = nomenclaturalStatus;
     }
 
     public LinnaeanRankClassification(String kingdom, String phylum,
@@ -64,6 +83,7 @@ public class LinnaeanRankClassification {
         this.subspecies = subspecies;
         this.infraspecificEpithet = infraspecificEpithet;
         this.scientificName = scientificName;
+        this.nomenclaturalStatus = null;
     }
     public LinnaeanRankClassification(LinnaeanRankClassification cl){
         this.kingdom = cl.kingdom;
@@ -86,6 +106,7 @@ public class LinnaeanRankClassification {
         this.authorship = cl.authorship;
         this.scientificName = cl.scientificName;
         this.rank = cl.rank;
+        this.nomenclaturalStatus = cl.nomenclaturalStatus;
     }
 
     /**
@@ -289,6 +310,20 @@ public class LinnaeanRankClassification {
     }
 
     /**
+     * @return the nomenclaturalstatus
+     */
+    public String getNomenclaturalStatus() {
+        return nomenclaturalStatus;
+    }
+
+    /**
+     * @param nomenclaturalStatus the nomenclaturalStatus to set
+     */
+    public void setNomenclaturalStatus(String nomenclaturalStatus) {
+        this.nomenclaturalStatus = nomenclaturalStatus;
+    }
+
+    /**
      * @return the identification for the kingdom, either a CB ID or GUID
      */
     public String getKid() {
@@ -388,6 +423,7 @@ public class LinnaeanRankClassification {
                 .append("subspecies", this.subspecies)
                 .append("infraspecificEpithet", this.infraspecificEpithet)
                 .append("scientificName", this.scientificName)
+                .append("nomenclaturalStatus", this.nomenclaturalStatus)
                 .toString();
     }
 
@@ -415,7 +451,7 @@ public class LinnaeanRankClassification {
                 this.family, rhs.family).append(this.order, rhs.order).append(
                 this.klass, rhs.klass).append(this.genus, rhs.genus).append(this.species, rhs.species)
                 .append(this.specificEpithet, rhs.specificEpithet).append(this.subspecies, rhs.subspecies)
-                .append(this.infraspecificEpithet, rhs.infraspecificEpithet).isEquals();
+                .append(this.infraspecificEpithet, rhs.infraspecificEpithet).append(this.nomenclaturalStatus, rhs.nomenclaturalStatus).isEquals();
     }
 
     /**
