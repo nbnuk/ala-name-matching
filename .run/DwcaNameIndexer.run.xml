@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="DwcaNameIndexer" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="MAIN_CLASS_NAME" value="au.org.ala.names.search.DwcaNameIndexer" />
+    <module name="ala-name-matching-builder" />
+    <option name="PROGRAM_PARAMETERS" value="--all --dwca /data/lucene/sources/UKSI_DwCA_TEST_INDEX_2021-12-13 --target /data/lucene/namematching-upgrade --irmng /data/names/irmng/IRMNG_DWC_HOMONYMS --common /data/names/col_vernacular.txt" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="au.org.ala.names.search.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

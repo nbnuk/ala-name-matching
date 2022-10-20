@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexableField;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.FSDirectory;
 import org.gbif.api.exception.UnparsableException;
@@ -1861,11 +1862,48 @@ public class ALANameSearcher {
         return lsid;
     }
 
+    ///TODO NBN2 OLD VERSION - hould we stick with thi instead?
+//    public NameSearchResult searchForRecordByLsid(String lsid) {
+//        NameSearchResult result = null;
+//        try {
+//            Query query = new TermQuery(new Term(NameIndexField.LSID.toString(), lsid));
+//            TopDocs hits = this.idSearcher.search(query, 1);
+//            if (hits.totalHits == 0)
+//                hits = this.cbSearcher.search(query, 1);
+//            if (hits.totalHits == 0) {
+//                //try common-name taxon ID match
+//                String taxonLsid = getLSIDForCommonNameID(lsid);
+//                if (taxonLsid != null) {
+//                    Query queryTaxon = new TermQuery(new Term(NameIndexField.LSID.toString(), taxonLsid));
+//                    hits = this.idSearcher.search(queryTaxon, 1);
+//                    if (hits.totalHits == 0)
+//                        hits = this.cbSearcher.search(queryTaxon, 1);
+//                }
+//            }
+//            if (hits.totalHits > 0)
+//                return new NameSearchResult(cbSearcher.doc(hits.scoreDocs[0].doc), MatchType.TAXON_ID);
+//        } catch (Exception ex) {
+//            log.error("Unable to search for record by LSID " + lsid, ex);
+//        }
+//        return result;
+//    }
+
     public NameSearchResult searchForRecordByLsid(String lsid) {
         NameSearchResult result = null;
         try {
             Query query = NameIndexField.LSID.search(lsid);
             TopDocs hits = this.idSearcher.search(query, 1);
+            //TODO NBN2 should we still do this?
+//            if (hits.totalHits == 0) {
+//                //try common-name taxon ID match
+//                String taxonLsid = getLSIDForCommonNameID(lsid);
+//                if (taxonLsid != null) {
+//                    Query queryTaxon = new TermQuery(new Term(NameIndexField.LSID.toString(), taxonLsid));
+//                    hits = this.idSearcher.search(queryTaxon, 1);
+//                    if (hits.totalHits == 0)
+//                        hits = this.cbSearcher.search(queryTaxon, 1);
+//                }
+//            }
             if (hits.totalHits.value > 0) {
                 Document link = this.idSearcher.doc(hits.scoreDocs[0].doc);
                 lsid = link.get(NameIndexField.REAL_LSID.name);

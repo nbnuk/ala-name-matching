@@ -80,6 +80,7 @@ public class NameSearchResult {
         this.synonymType = synonymType;
         if (priority != null)
             this.matchMetrics.setPriority(priority);
+        this.nomenclaturalStatus = nomenclaturalStatus;
         this.establishmentMeans = establishmentMeans;
         this.habitat = habitat;
         this.author = author;
