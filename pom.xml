@@ -30,6 +30,19 @@
         <tag>HEAD</tag>
     </scm>
 
+    <distributionManagement>
+        <repository>
+            <id>uk-nbn-releases</id>
+            <name>Internal Releases</name>
+            <url>https://repository.gbif.org/repository/uk-nbn-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>uk-nbn-snapshots</id>
+            <name>Internal Releases</name>
+            <url>https://repository.gbif.org/repository/uk-nbn-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <properties>
         <!-- This project uses UTF8 for Regular Expressions -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
