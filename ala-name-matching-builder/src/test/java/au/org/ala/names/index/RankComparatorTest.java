@@ -25,11 +25,11 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class RankComparatorTest {
-    private RankComparator comparator;
+    private RankComparator_NotUsed comparator;
     
     @Before
     public void setUp() throws Exception {
-        this.comparator = new RankComparator();
+        this.comparator = new RankComparator_NotUsed();
     }
 
     @Test

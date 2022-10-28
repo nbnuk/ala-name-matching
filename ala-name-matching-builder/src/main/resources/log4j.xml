@@ -9,7 +9,7 @@
     <appender name="FILE" class="org.apache.log4j.FileAppender">
         <param name="File" value="export.log"/>
         <param name="Append" value="true"/>
-        <param name="Threshold" value="INFO"/>
+        <param name="Threshold" value="DEBUG"/>
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d [%c{5}] %m%n"/>
         </layout>
@@ -25,8 +25,11 @@
     <category name="org.springframework.jdbc.core">
         <priority value="ERROR"/>
     </category>
+    <category name="au.org.ala.names.search">
+        <priority value="INFO"/>
+    </category>
     <root>
         <appender-ref ref="CONSOLE"/>
-        <!--appender-ref ref="FILE"/-->
+        <appender-ref ref="FILE"/>
     </root>
 </log4j:configuration>

@@ -44,19 +44,7 @@ public class UksiNameSearcherTest {
 
 
     @Test
-    @Ignore //the files are not the same.
-    public void indexSmokeTest2() throws IOException {
-        Path temp = Files.createTempFile("indexSmokeTest","txt");
-        saveIndexSearchResultsToFile(temp.toFile());
-        File testFile = new File("/data/lucene/sources/UKSI_DwCA_TEST_INDEX_2021-12-13/generated-index-test.txt");
-        InputStream inputStream1 = new FileInputStream(temp.toFile());
-        InputStream inputStream2 = new FileInputStream(testFile);
-
-        assertTrue(IOUtils.contentEquals(inputStream1, inputStream2));
-    }
-
-    @Test
-    public void indexSmokeTest() throws IOException {
+    public void indexSmokeTest() throws Exception {
 
         String line;
         try (BufferedReader br = new BufferedReader(new FileReader("/data/lucene/sources/UKSI_DwCA_TEST_INDEX_2021-12-13/generated-index-test.txt"))) {
@@ -69,15 +57,11 @@ public class UksiNameSearcherTest {
                 line = br.readLine();
                     NameSearchResult actualNsr = searcher.searchForRecordByID(record[1]);
 
-                    //NameSearchResult expectedNsr = mapper.readValue(line, NameSearchResult.class);
-                    //assertEquals(expectedNsr, actualNsr);
-
                     Map expectedNsrAsMap = mapper.readValue(line, HashMap.class);
                     assertEquals(expectedNsrAsMap.get("id"), actualNsr.getId());
                     assertEquals(expectedNsrAsMap.get("lsid"), actualNsr.getLsid());
-                    System.out.println(count+" right, expected:"+expectedNsrAsMap.get("right")+" actual:"+actualNsr.getRight());
-//                    assertEquals(expectedNsrAsMap.get("right"), actualNsr.getRight());
-//                    assertEquals(expectedNsrAsMap.get("left"), actualNsr.getLeft());
+                    assertEquals(Integer.parseInt((String)expectedNsrAsMap.get("right"))-Integer.parseInt((String)expectedNsrAsMap.get("left")),
+                        Integer.parseInt(actualNsr.getRight())-Integer.parseInt(actualNsr.getLeft()));
                     assertEquals(expectedNsrAsMap.get("matchType"), actualNsr.getMatchType().name());
                     assertEquals(expectedNsrAsMap.get("acceptedLsid"), actualNsr.getAcceptedLsid());
                     assertEquals(expectedNsrAsMap.get("rank"), actualNsr.getRank().name());
@@ -438,6 +422,7 @@ public class UksiNameSearcherTest {
     }
 
 
+    //******run this to dump the index to a csv file. The csv file can then be used in the smoke test indexSmokeTest above***
     public static void main(String[] args) throws Exception {
         saveIndexSearchResultsToFile(new File("/data/lucene/sources/UKSI_DwCA_TEST_INDEX_2021-12-13/generated-index-test.txt"));
     }

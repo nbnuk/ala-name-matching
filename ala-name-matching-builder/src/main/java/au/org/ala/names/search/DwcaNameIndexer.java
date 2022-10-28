@@ -686,10 +686,19 @@ public class DwcaNameIndexer extends UksiNameIndexer {
         String id = doc.get(NameIndexField.ID.toString());
         //get children for this record
         TopDocs children = getLoadIdxResults(null, "parent_id", id, PAGE_SIZE);
+       // log.debug("id as parent: "+id);
         if(children.totalHits.value == 0){
             id =  doc.get(NameIndexField.LSID.toString());
             children = getLoadIdxResults(null, "parent_id", id, PAGE_SIZE);
+            //log.debug("no parent found using id, using lsid as parent: "+id);
         }
+//        log.debug("children:");
+//        for (ScoreDoc child : children.scoreDocs) {
+//            Document cdoc = lsearcher.doc(child.doc);
+//            log.debug(cdoc.toString());
+//        }
+//        log.debug("");
+
         int left = currentLeft;
         int right = left;
         int rankId = Integer.parseInt(doc.get(NameIndexField.RANK_ID.toString()));

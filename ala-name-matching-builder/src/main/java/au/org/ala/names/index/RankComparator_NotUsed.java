@@ -28,7 +28,7 @@ import static au.org.ala.names.model.RankType.*;
 /**
  * Compare two ranks and establish whether they are close enough to each other or different.
  */
-public class RankComparator {
+public class RankComparator_NotUsed {
     private static final RankType[][] RANK_RANGES = new RankType[][] {
             new RankType[] { DOMAIN, DOMAIN, KINGDOM },
             new RankType[] { KINGDOM, DOMAIN, INFRAKINGDOM },
@@ -86,7 +86,7 @@ public class RankComparator {
             new RankType[] { HOLOMORPH, SPECIES, SUBSPECIES },
             new RankType[] { ANAMORPH, SPECIES, SUBSPECIES },
             new RankType[] { TELEOMORPH, SPECIES, SUBSPECIES },
-            //TODO NBN1
+            //NBN1
             //what should we have instead of the below. Note: we have BREED instead of SUPRAGENERICNAME and HYBRID
 //            new RankType[] { SUBSPECIES, NOTHOSPECIES, SUPRAGENERICNAME },
 //            new RankType[] { NOTHOSUBSPECIES, NOTHOSPECIES, SUPRAGENERICNAME },
