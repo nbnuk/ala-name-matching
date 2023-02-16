@@ -386,7 +386,7 @@ public class DwcaNameIndexer extends UksiNameIndexer {
             String taxonID = record.id();
             String vernacularName = record.value(DwcTerm.vernacularName);
             String language = record.value(DcTerm.language);
-            String priority = record.value(ALATerm.priority);
+            String priority = record.value(ALATerm.status);
             String commonNameID = record.value(DwcTerm.scientificNameID);
             TopDocs result = getLoadIdxResults(null, "lsid", taxonID, 1);
             if(result.totalHits.value > 0){
