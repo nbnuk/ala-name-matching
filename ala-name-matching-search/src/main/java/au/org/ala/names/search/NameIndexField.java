@@ -74,7 +74,8 @@ public enum NameIndexField {
     LANGUAGE("lang", FieldType.IDENTIFIER),
     /* Stores the priority score associated with a taxon */
     PRIORITY("priority", FieldType.INTEGER),
-    PRIORITY_VAL("priority_val", FieldType.INTEGER),
+    PRIORITY_STATUS("priority_status", FieldType.TEXT),
+//    PRIORITY_VAL("priority_val", FieldType.INTEGER),
     NOMENCLATURAL_STATUS("nomenclatural_status", FieldType.TEXT), //NBN: name attribute like 'sensu lato'
     ESTABLISHMENT_MEANS("establishment_means", FieldType.TEXT), //NBN: native / non-native
     HABITAT("habitat", FieldType.TEXT); //NBN: habitat(s);

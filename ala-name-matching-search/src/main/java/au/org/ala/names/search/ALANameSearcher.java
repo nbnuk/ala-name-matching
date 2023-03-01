@@ -1609,7 +1609,7 @@ public class ALANameSearcher {
     public String getCommonNameForLSID(String lsid) {
         if (lsid != null) {
             Query query = NameIndexField.LSID.search(lsid);
-            Sort sortby = new Sort(new SortField(NameIndexField.PRIORITY_VAL.toString(), SortField.Type.INT, true));
+            Sort sortby = new Sort(new SortField(NameIndexField.PRIORITY.toString(), SortField.Type.INT, true));
             try {
                 TopDocs results = vernSearcher.search(query, 1, sortby);
                 log.debug("Number of matches for " + lsid + " " + results.totalHits);
@@ -1637,7 +1637,7 @@ public class ALANameSearcher {
                     BooleanQuery.Builder builder = new BooleanQuery.Builder();
                     builder.add(NameIndexField.LSID.search(lsid), BooleanClause.Occur.MUST);
                     builder.add(NameIndexField.LANGUAGE.search(language), BooleanClause.Occur.MUST);
-                    Sort sortby = new Sort(new SortField(NameIndexField.PRIORITY_VAL.toString(), SortField.Type.INT, true));
+                    Sort sortby = new Sort(new SortField(NameIndexField.PRIORITY.toString(), SortField.Type.INT, true));
                     TopDocs results = vernSearcher.search(builder.build(), 1, sortby);
                     log.debug("Number of matches for " + lsid + " " + results.totalHits);
                     for (ScoreDoc sdoc : results.scoreDocs) {
@@ -1660,7 +1660,7 @@ public class ALANameSearcher {
     public Set<String> getCommonNamesForLSID(String lsid, int maxNumberOfNames) {
         if (lsid != null) {
             Query query = NameIndexField.LSID.search(lsid);
-            Sort sortby = new Sort(new SortField(NameIndexField.PRIORITY_VAL.toString(), SortField.Type.INT, true));
+            Sort sortby = new Sort(new SortField(NameIndexField.PRIORITY.toString(), SortField.Type.INT, true));
             try {
                 TopDocs results = vernSearcher.search(query, maxNumberOfNames, sortby);
                 //if all the results have the same scientific name result the LSID for the first
@@ -1726,7 +1726,7 @@ public class ALANameSearcher {
     private String getLSIDForUniqueCommonName(String name) {
         if (name != null) {
             Query query = NameIndexField.SEARCHABLE_COMMON_NAME.search(name);
-            Sort sortby = new Sort(new SortField(NameIndexField.PRIORITY_VAL.toString(), SortField.Type.INT, true));
+            Sort sortby = new Sort(new SortField(NameIndexField.PRIORITY.toString(), SortField.Type.INT, true));
             try {
                 TopDocs results = vernSearcher.search(query, 10, sortby);
                 //if all the results have the same scientific name result the LSID for the first

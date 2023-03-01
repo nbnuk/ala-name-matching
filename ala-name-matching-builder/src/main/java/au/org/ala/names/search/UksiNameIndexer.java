@@ -46,17 +46,16 @@ public class UksiNameIndexer extends ALANameIndexer{
 
 
 
-    protected Document createCommonNameDocument(String cn, String sn, String lsid, String language, boolean checkAccepted, String priority, String commonNameID) {
+    protected Document createCommonNameDocument(String cn, String sn, String lsid, String language, boolean checkAccepted, String priorityStatus, String commonNameID) {
         Document doc = createCommonNameDocument(cn, sn, lsid, language, checkAccepted);
 
-        if (priority != null && priority != "") {
-            NameIndexField.PRIORITY.store(priority, doc);
+        if (priorityStatus != null && priorityStatus != "") {
+            NameIndexField.PRIORITY_STATUS.store(priorityStatus, doc);
 
-            VernacularType type = VernacularType.forTerm(priority, VernacularType.COMMON);
-            Integer priority_val = type.getPriority();
-            //DocValue not used anywhere else -leave it:
-            // doc.add(new NumericDocValuesField(IndexField.PRIORITY.toString() + "_val", priority_val));
-            NameIndexField.PRIORITY_VAL.store(priority_val, doc);
+            VernacularType type = VernacularType.forTerm(priorityStatus, VernacularType.COMMON);
+            Integer priority = type.getPriority();
+            doc.add(new NumericDocValuesField(NameIndexField.PRIORITY.toString(), priority));
+            NameIndexField.PRIORITY.store(priority, doc);
         }
 
         if(commonNameID != null) {
