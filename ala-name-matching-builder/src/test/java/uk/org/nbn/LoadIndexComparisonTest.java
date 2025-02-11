@@ -28,8 +28,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class LoadIndexComparisonTest {
 
-    private final static String INDEX_TO_TEST_AGAINST = "/data/lucene/sources/UKSI_DwCA_TEST_INDEX_2021-12-13/load-index-test.csv";
-    private final static String INDEX = "/data/lucene/nmload-tmp-upgrade";
+    private final static String INDEX_TO_TEST_AGAINST = "/data/lucene/uksi-namatching-index-test/expected-load-index.csv";
+    private final static String INDEX = "/data/lucene/nmload-tmp";
 
     @Test
     public void comparisonTest() throws Exception {
@@ -56,14 +56,14 @@ public class LoadIndexComparisonTest {
 
     }
 
+    /**
+     * ***This is not part of the test. It was used to create a csv file from the temopary load index. Note: works with lucene 6.6.6
+     */
+//    public static void main(String[] args) throws Exception {
+//        saveTempLoadIndexToFile("/data/lucene/nmload-tmp","/data/lucene/uksi-namatching-index-test/expected-load-index.csv");
+//    }
 
-
-    //******run this to dump a load index to a csv file. The csv file can then be used in the test above***
-    public static void main(String[] args) throws Exception {
-        saveIndexToFile("/data/lucene/nmload-tmp","/data/lucene/sources/UKSI_DwCA_TEST_INDEX_2021-12-13/load-index-test.csv");
-    }
-
-    public static void saveIndexToFile(String indexDirectory, String csvFilename) throws IOException{
+    private static void saveTempLoadIndexToFile(String indexDirectory, String csvFilename) throws IOException{
         CSVWriter csvWriter = new CSVWriter(new FileWriter(csvFilename));
         IndexReader index1Reader = DirectoryReader.open(FSDirectory.open(new File(indexDirectory).toPath()));
         csvWriter.writeNext(new String[]{"id","lsid","parent_id","name","author","name_complete","establishment_means","habitat",

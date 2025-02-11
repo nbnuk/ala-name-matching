@@ -39,7 +39,7 @@ public class UksiNameSearcherTest {
 
     @org.junit.BeforeClass
     public static void init() throws Exception {
-        searcher = new ALANameSearcher("/data/lucene/namematching-upgrade");
+        searcher = new ALANameSearcher("/data/lucene/index-under-test");
     }
 
 
@@ -47,10 +47,10 @@ public class UksiNameSearcherTest {
     public void indexSmokeTest() throws Exception {
 
         String line;
-        try (BufferedReader br = new BufferedReader(new FileReader("/data/lucene/sources/UKSI_DwCA_TEST_INDEX_2021-12-13/generated-index-test.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("/data/lucene/uksi-namatching-index-test/derived-test-data-from-EXPECTED-INDEX-2021-12-13.txt"))) {
 
             ObjectMapper mapper = new ObjectMapper();
-            CSVReader reader = new CSVReaderBuilder(new FileReader("/data/lucene/sources/UKSI_DwCA_TEST_INDEX_2021-12-13/vernacular.csv")).withSkipLines(1).build();
+            CSVReader reader = new CSVReaderBuilder(new FileReader("/data/lucene/uksi-namatching-index-test/sources/vernacular.csv")).withSkipLines(1).build();
             int count = 0;
             String[] record;
             while ((record = reader.readNext()) != null && count++ < 1000000) {
@@ -422,13 +422,15 @@ public class UksiNameSearcherTest {
     }
 
 
-    //******run this to dump the index to a csv file. The csv file can then be used in the smoke test indexSmokeTest above***
-    public static void main(String[] args) throws Exception {
-        saveIndexSearchResultsToFile(new File("/data/lucene/sources/UKSI_DwCA_TEST_INDEX_2021-12-13/generated-index-test.txt"));
-    }
+    /**
+     * ***This is not part of the test. It was used to dump the expected index to a csv file. Note: works with lucene 6.6.6
+     */
+//    public static void main(String[] args) throws Exception {
+//        saveIndexSearchResultsToFile(new File("/data/lucene/uksi-namatching-index-test/derived-test-data-from-EXPECTED-INDEX-2021-12-13.txt"));
+//    }
 
     public static void saveIndexSearchResultsToFile(File file) throws IOException{
-        ALANameSearcher nameSearcher = new ALANameSearcher("/data/lucene/namematching_TEST_INDEX_2021-12-13");
+        ALANameSearcher nameSearcher = new ALANameSearcher("/data/lucene/uksi-namatching-index-test/namematching-EXPECTED-INDEX-2021-12-13");
         FileWriter fileWriter = null;
         PrintWriter writer = null;
         try {
